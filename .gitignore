@@ -10,7 +10,7 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
+/dist/
 downloads/
 eggs/
 .eggs/
@@ -127,3 +127,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# PyInstrument profiles
+pyinstrument_profiles/
+
+# MacOS
+.DS_Store
+
+/src/staticfiles/
