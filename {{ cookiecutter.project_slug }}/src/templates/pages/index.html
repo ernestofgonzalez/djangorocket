@@ -1,5 +1,20 @@
 {% raw %}
     {% extends "base.html" %}
     {% block head %}{% endblock %}
-    {% block body %}<h1>Get started</h1>{% endblock %}
+    {% block body %}
+        <main class="2xl:container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 text-center">
+            <h1 class="mt-20 mx-auto max-w-7xl leading-9 tracking-tighter text-gray-800 text-3xl font-bold md:text-4xl lg:text-6xl">
+                The dream is alive.
+            </h1>
+            <h2 class="leading-6 text-base mx-auto mt-4 max-w-5xl font-light text-gray-800 text-xl md:text-2xl">
+                Your rocket is ready to launch!
+            </h2>
+            <p class="leading-6 text-base mx-auto mt-40 max-w-5xl font-light text-gray-800 text-lg md:text-xl">
+                We're open to feature requests, so if you have any <a href="https://github.com/ErnestoFGonzalez/djangorocket/issues"
+    target="_blank"
+    rel="noreferrer noopener"
+    class="text-blue-600 hover:text-gray-800 font-semibold underline">open an issue</a>.
+            </p>
+        </main>
+    {% endblock %}
 {% endraw %}
