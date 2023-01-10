@@ -1,0 +1,97 @@
+{% for error in form.non_field_errors %}
+    <div role="alert" class="w-full mb-2 bg-red-500 py-2 px-4 rounded">
+        <span class="text-white">{{ error }}</span>
+    </div>
+{% endfor %}
+<div class="my-1">
+    <div>
+        <label for="{{ form.name.id_for_label }}" class="mb-2 label">Nombre</label>
+        <input id="id_name"
+               name="name"
+               type="text"
+               value="{{ form.name.value|default_if_none:'' }}"
+               autocomplete="name"
+               placeholder="{{ form.name.field.widget.attrs.placeholder }}"
+               required
+               class="block w-full input">
+    </div>
+    {% if form.errors.name %}
+        <ul class="pt-0.5">
+            {% for error in form.errors.name %}<li class="text-sm text-red-500">{{ error|escape }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+</div>
+<div class="my-1">
+    <div>
+        <label for="{{ form.email.id_for_label }}" class="mb-2 label">Correo electrónico</label>
+        <input id="id_email"
+               name="email"
+               type="email"
+               value="{{ form.email.value|default_if_none:'' }}"
+               autocomplete="email"
+               placeholder="{{ form.email.field.widget.attrs.placeholder }}"
+               required
+               class="block w-full input">
+    </div>
+    {% if form.errors.email %}
+        <ul class="pt-0.5">
+            {% for error in form.errors.email %}<li class="text-sm text-red-500">{{ error|escape }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+</div>
+<div class="my-1">
+    <div >
+        <label for="{{ form.password.id_for_label }}" class="mb-2 label">Password</label>
+        <input id="id_password"
+               name="password"
+               type="password"
+               autocomplete="new-password"
+               required
+               class="block w-full input">
+    </div>
+    {% if form.errors.password %}
+        <ul class="pt-0.5">
+            {% for error in form.errors.password %}<li class="text-sm text-red-500">{{ error|escape }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+</div>
+<div class="my-1">
+    <label for="{{ form.country.id_for_label }}" class="mb-2 label">País</label>
+    <div>
+        <select id="id_country" name="country" class="block w-full input">
+            <option value="" disabled selected>
+                {{ form.country.field.widget.attrs.placeholder }}
+            </option>
+            {% for x,y in form.fields.country.choices %}
+                <option value="{{ x }}" {% if form.country.value == x %}selected{% endif %}>
+                    {{ y }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    {% if form.errors.country %}
+        <ul class="pt-0.5">
+            {% for error in form.errors.country %}<li class="text-sm text-red-500">{{ error|escape }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+</div>
+<div class="my-1">
+    <div class="relative flex items-start">
+        <div class="flex h-5 items-center">
+            <input id="{{ form.terms.id_for_label }}"
+                   aria-describedby="terms-description"
+                   name="terms"
+                   type="checkbox"
+                   required
+                   class="h-4 w-4 rounded border-gray-300 text-violet-600 focus:ring-violet-500">
+        </div>
+        <div class="ml-2 text-base text-gray-900">
+            <span id="terms-description">Acepto los <a class="text-blue-600 hover:text-gray-800 font-semibold underline">Términos y Condiciones de uso de Tablas</a></span>
+        </div>
+    </div>
+    {% if form.errors.terms %}
+        <ul class="pt-0.5">
+            {% for error in form.errors.terms %}<li class="text-sm text-red-500">{{ error|escape }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+</div>

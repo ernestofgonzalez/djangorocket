@@ -1,0 +1,27 @@
+{% extends "base_settings.html" %}
+{% block head %}
+    <title>Configuraciones de correo electrónico</title>
+    <meta name="description"
+          content="Tablas junta toda la información de tu negócio en un solo lugar. La nueva, fácil de usar, manera de gerenciar tu cartera de clientes y servicios.">
+    <meta name="robots" content="noindex,nofollow">
+{% endblock %}
+{% block main %}
+    <div>
+        <div>
+            <h1 class="text-2xl md:text-3xl font-semibold text-gray-900">Correos electrónicos</h1>
+        </div>
+        <div class="mt-4 rounded border-2 border-gray-200 bg-white p-4">
+            <p class="text-sm text-gray-700">
+                <span class="text-base text-black font-medium">{{ request.user.email }}</span> – <span class="text-green-600 font-medium">Primário</span>
+            </p>
+            <ul class="px-6 list-disc">
+                <li>
+                    <span class="text-sm text-gray-700 font-medium">Visible en correos electrónicos</span>
+                </li>
+                <li>
+                    <span class="text-sm text-gray-700 font-medium">Recibe notificaciones</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

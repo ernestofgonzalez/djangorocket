@@ -1,0 +1,25 @@
+{% extends "base_settings.html" %}
+{% block head %}
+    <title>Configuraciones de cuenta</title>
+    <meta name="description"
+          content="Tablas junta toda la información de tu negócio en un solo lugar. La nueva, fácil de usar, manera de gerenciar tu cartera de clientes y servicios.">
+    <meta name="robots" content="noindex,nofollow">
+{% endblock %}
+{% block main %}
+    <div>
+        <div>
+            <h1 class="text-2xl md:text-3xl font-semibold text-gray-900">Configuraciones de cuenta</h1>
+        </div>
+        <form action="{% url 'tablas-auth:account-settings' %}"
+              method="post"
+              class="mt-4 rounded border-2 border-gray-200 bg-white">
+            {% csrf_token %}
+            <div class="p-4 md:p-10">
+                <div class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">{{ form }}</div>
+                <div class="pt-6 flex flex-row justify-end">
+                    <input type="submit" value="Guardar" class="ml-3 btn btn-primary btn-small"/>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
