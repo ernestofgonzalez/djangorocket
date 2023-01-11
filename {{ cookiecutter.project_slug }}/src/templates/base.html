@@ -5,13 +5,6 @@
     <html lang="{{ LANGUAGE_CODE }}" dir="ltr">
         <head>
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>
-                {% block title %}
-                {% endraw %}
-                {{ cookiecutter.project_name }}
-                {% raw %}
-                {% endblock title %}
-            </title>
             {% block head %}{% endblock %}
             {% compress css %}
                 {% tailwind_css %}

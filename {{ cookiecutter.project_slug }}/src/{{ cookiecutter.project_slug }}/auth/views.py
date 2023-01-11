@@ -5,7 +5,7 @@ from django.db import IntegrityError
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
-from {{cookie.project_slug}}.auth.forms import (
+from {{cookiecutter.project_slug}}.auth.forms import (
     LoginForm,
     RegisterForm,
     UpdatePasswordForm,
@@ -18,7 +18,6 @@ from {{cookie.project_slug}}.auth.forms import (
 @login_required
 def account_settings_view(request):
     context = {
-        "org": request.user.get_or_create_settings()[0].current_org,
         "current_tab": "account",
     }
 

@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "storages",
     "tailwind",
     "tailwind_theme",
+    "{{ cookiecutter.project_slug }}.auth",
 ]
 
 if DEBUG is True:
@@ -111,6 +112,8 @@ CORS_ORIGIN_WHITELIST = json.loads(os.environ.get("CORS_ORIGIN_WHITELIST"))
 DATABASES = {"default": dj_database_url.config(default=os.environ.get("DATABASE_URL"))}
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+AUTH_USER_MODEL = "{{ cookiecutter.project_slug }}_auth.User"
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
@@ -187,6 +190,8 @@ CELERY_BEAT_SCHEDULE = {}
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+if DEBUG is True:
+    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATIC_HOST = os.environ.get("STATIC_HOST")
@@ -194,9 +199,6 @@ STATICFILES_DIRS = [
     STATIC_DIR,
 ]
 STATIC_URL = "/static/"
-if DEBUG is True:
-    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
-    STATIC_URL = "/static/"
 
 
 COMPRESS_STORAGE = "compressor.storage.GzipCompressorFileStorage"
@@ -240,3 +242,8 @@ STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", None)
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", None)
 STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", None)
 STRIPE_PRICE_ID = os.environ.get("STRIPE_PRICE_ID", None)
+
+
+# {{ cookiecutter.project_name }} config
+
+AUTH_USER_NAME_MAX_LENGTH = int(os.environ.get("AUTH_USER_NAME_MAX_LENGTH", "150"))

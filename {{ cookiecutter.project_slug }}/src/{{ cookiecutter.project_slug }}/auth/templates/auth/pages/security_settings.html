@@ -1,29 +1,35 @@
-{% extends "base_settings.html" %}
-{% block head %}
-    <title>Configuraciones de seguridad</title>
-    <meta name="description"
-          content="Tablas junta toda la información de tu negócio en un solo lugar. La nueva, fácil de usar, manera de gerenciar tu cartera de clientes y servicios.">
-    <meta name="robots" content="noindex,nofollow">
-{% endblock %}
-{% block main %}
-    <div>
+{% raw %}
+    {% extends "base_settings.html" %}
+    {% block head %}
+        <title>Security settings -
+        {% endraw %}
+        {{ cookiecutter.project_name }}
+        {% raw %}
+        </title>
+        <meta name="robots" content="noindex,nofollow">
+    {% endblock %}
+    {% block main %}
         <div>
-            <h1 class="text-2xl md:text-3xl font-semibold text-gray-900">Cambiar password</h1>
-        </div>
-        <form action="{% url 'tablas-auth:security-settings' %}"
-              method="post"
-              class="mt-4 rounded border-2 border-gray-200 bg-white">
-            {% csrf_token %}
-            <div class="p-4 md:p-10">
-                <div class="grid grid-cols-1 gap-y-4">{{ form }}</div>
-                <div class="pt-6 flex flex-row justify-end items-center">
-                    <a href="#"
-                       class="text-sm text-blue-600 hover:text-gray-800 font-semibold underline">Se me olvidó mi password</a>
-                    <input type="submit"
-                           value="Cambiar password"
-                           class="ml-5 btn btn-white btn-small"/>
-                </div>
+            <div>
+                <h1 class="text-2xl md:text-3xl font-semibold text-gray-900">Change password</h1>
             </div>
-        </form>
-    </div>
-{% endblock %}
+            <form action="{% url '
+            {% endraw %}
+            {{ cookiecutter.project_slug }}
+            {% raw %}
+                -auth:security-settings' %}" method="post" class="mt-4 rounded border-2 border-gray-200 bg-white">
+                {% csrf_token %}
+                <div class="p-4 md:p-10">
+                    <div class="grid grid-cols-1 gap-y-4">{{ form }}</div>
+                    <div class="pt-6 flex flex-row justify-end items-center">
+                        <a href="#"
+                           class="text-sm text-blue-600 hover:text-gray-800 font-semibold underline">I forgot my password</a>
+                        <input type="submit"
+                               value="Update password"
+                               class="ml-5 btn btn-white btn-small"/>
+                    </div>
+                </div>
+            </form>
+        </div>
+    {% endblock %}
+{% endraw %}
