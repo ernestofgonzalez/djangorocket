@@ -1,0 +1,24 @@
+{% raw %}
+    {% for error in form.non_field_errors %}
+        <div role="alert" class="mb-2 w-full bg-red-500 py-2 px-4 rounded">
+            <span class="text-white">{{ error }}</span>
+        </div>
+    {% endfor %}
+    <div class="sm:col-span-2">
+        <div>
+            <label for="{{ form.name.id_for_label }}" class="mb-2 label">{{ form.name.label }}</label>
+            <p class="mb-2 text-sm font-normal text-gray-700">{{ form.name.field.help_text }}</p>
+            <input id="id_name"
+                   name="name"
+                   type="text"
+                   value="{{ form.name.value|default_if_none:'' }}"
+                   placeholder="{{ form.name.field.widget.attrs.placeholder }}"
+                   class="block w-full input">
+        </div>
+        {% if form.errors.name %}
+            <ul class="pt-0.5">
+                {% for error in form.errors.name %}<li class="text-sm text-red-500">{{ error|escape }}</li>{% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+{% endraw %}
