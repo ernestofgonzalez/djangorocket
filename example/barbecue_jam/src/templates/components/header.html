@@ -1,4 +1,4 @@
-{% raw %}
+
     <header class="2xl:container mx-auto px-4 md:px-16 py-8">
         <nav class="z-50 flex flex-col xl:flex-row gap-y-4 justify-between items-center">
             <div class="flex items-center">
@@ -19,15 +19,12 @@
                         <span>Go to dashboard</span>
                     </a>
                 {% else %}
-                    <a href="{% url '
-                    {% endraw %}
-                    {{ cookiecutter.project_slug }}
-                    {% raw %}
-                        -auth:login' %}" class="btn btn-white bg-transparent btn-small lg:btn-medium">
+                    <a href="{% url 'barbecue_jam-auth:login' %}"
+                       class="btn btn-white bg-transparent btn-small lg:btn-medium">
                         <span>Log in</span>
                     </a>
                 {% endif %}
             </div>
         </nav>
     </header>
-{% endraw %}
+

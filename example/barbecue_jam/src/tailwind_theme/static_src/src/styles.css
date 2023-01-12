@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .btn {
+        @apply transition ease-in-out inline-flex items-center justify-center rounded font-bold focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2;
+    }
+
+    .btn-extra-small {
+        @apply py-1 px-2 text-xs;
+    }
+
+    .btn-small {
+        @apply py-1 px-2 text-xs md:text-sm;
+    }
+
+    .btn-medium {
+        @apply py-2 px-4 text-sm md:text-base;
+    }
+
+    .btn-large {
+        @apply py-4 px-8 text-lg md:text-xl;
+    }
+
+    .btn-primary {
+        @apply border-2 border-blue-800 bg-[#0081fb] text-white hover:text-slate-100 hover:bg-blue-700 active:bg-blue-900 active:text-white focus-visible:outline-blue-700;
+    }
+
+    .btn-white {
+        @apply bg-white border-2 border-gray-700 text-gray-700 hover:border-green-800 hover:text-white hover:bg-green-600 active:border-green-800 active:text-white active:bg-green-900 focus-visible:outline-green-700;
+    }
+
+    .input {
+        @apply appearance-none rounded border-2 border-gray-800 bg-gray-50 px-3 py-2 text-base text-gray-900 placeholder-gray-400 focus:border-violet-500 focus:bg-white focus:outline-none focus:ring-violet-500;
+    }
+
+    .label {
+        @apply text-base font-medium text-gray-900;
+    }
+}

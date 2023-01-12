@@ -1,18 +1,27 @@
-{% raw %}
+
     {% extends "base.html" %}
     {% block head %}
-        <title>Login - {%- endraw -%}{{ cookiecutter.project_name }}{%- raw -%}</title>
+        <title>Login -
+        
+        barbecue_jam
+        
+        </title>
         <meta name="robots" content="noindex,nofollow">
     {% endblock %}
     {% block body %}
         <div class="2xl:container mx-auto px-4 md:px-16 py-5 md:py-10">
             <main class="mx-auto max-w-md rounded border-2 border-[#FFC894] bg-[#FFE2C7] py-10 px-10">
                 <h2 class="mb-5 text-center text-2xl font-bold text-gray-900">
-                    Log in to continue using {%- endraw -%}{{ cookiecutter.project_name }}{%- raw %}
+                    Log in to continue using
+                
+                barbecue_jam
+                
                 </h2>
-                <form action="{% url '{%- endraw -%}{{ cookiecutter.project_slug }}{%- raw -%}-auth:login' %}"
-                      method="post"
-                      class="mt-10 grid grid-cols-1 gap-y-3">
+                <form action="{% url '
+                
+                barbecue_jam
+                
+                    -auth:login' %}" method="post" class="mt-10 grid grid-cols-1 gap-y-3">
                     {% csrf_token %}
                     {{ form }}
                     <div class="mt-5">
@@ -23,11 +32,14 @@
                 </form>
                 <div>
                     <p class="mt-4 text-center text-base text-gray-900">
-                        Don't have an account? <a href="{% url '{%- endraw -%}{{ cookiecutter.project_slug }}{%- raw -%}-auth:register' %}"
-    class="text-blue-600 hover:text-gray-800 font-semibold underline">Sign up</a>
-                    </p>
-                </div>
-            </main>
-        </div>
-    {% endblock %}
-{% endraw %}
+                        Don't have an account? <a href="{% url '
+                    
+                    barbecue_jam
+                    
+                    -auth:register' %}" class="text-blue-600 hover:text-gray-800 font-semibold underline">Sign up</a>
+                </p>
+            </div>
+        </main>
+    </div>
+{% endblock %}
+

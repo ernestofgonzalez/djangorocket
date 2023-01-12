@@ -24,3 +24,4 @@ exclude = '''
 
 [tool.djlint]
 profile = "django"
+format_attribute_template_tags = true

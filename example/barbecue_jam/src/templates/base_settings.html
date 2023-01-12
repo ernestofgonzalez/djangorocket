@@ -1,0 +1,21 @@
+
+    {% extends "base.html" %}
+    {% block head %}
+        <title>Settings -
+        
+        barbecue_jam
+        
+        </title>
+        <meta name="robots" content="noindex,nofollow">
+    {% endblock %}
+    {% block body %}
+        {% include "components/app_header.html" %}
+        <div class="2xl:container mx-auto px-4 md:px-16 py-10 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 space-x-0 md:space-x-4 space-y-4 md:space-y-0">
+            {% include "components/settings_desktop_sidebar.html" %}
+            <main class="col-span-1 md:col-span-2 lg:col-span-3">
+                {% block main %}{% endblock %}
+            </main>
+        </div>
+        {% include "components/footer.html" %}
+    {% endblock %}
+

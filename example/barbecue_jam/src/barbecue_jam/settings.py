@@ -55,9 +55,9 @@ INSTALLED_APPS = [
     "storages",
     "tailwind",
     "tailwind_theme",
-    "{{ cookiecutter.project_slug }}.auth",
-    "{{ cookiecutter.project_slug }}.billing",
-    "{{ cookiecutter.project_slug }}.utils",
+    "barbecue_jam.auth",
+    "barbecue_jam.billing",
+    "barbecue_jam.utils",
 ]
 
 if DEBUG is True:
@@ -81,7 +81,7 @@ if DEBUG is True:
     MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
     MIDDLEWARE.insert(0, "pyinstrument.middleware.ProfilerMiddleware")
 
-ROOT_URLCONF = "{{ cookiecutter.project_slug }}.urls"
+ROOT_URLCONF = "barbecue_jam.urls"
 
 TEMPLATES = [
     {
@@ -94,13 +94,13 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "{{ cookiecutter.project_slug }}.context_processors.stripe_publishable_key",
+                "barbecue_jam.context_processors.stripe_publishable_key",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = "{{ cookiecutter.project_slug }}.wsgi.application"
+WSGI_APPLICATION = "barbecue_jam.wsgi.application"
 
 CORS_ORIGIN_ALLOW_ALL = False
 if os.environ.get("CORS_ORIGIN_ALLOW_ALL", "False") == "True":
@@ -115,7 +115,7 @@ DATABASES = {"default": dj_database_url.config(default=os.environ.get("DATABASE_
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AUTH_USER_MODEL = "{{ cookiecutter.project_slug }}_auth.User"
+AUTH_USER_MODEL = "barbecue_jam_auth.User"
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
@@ -246,6 +246,6 @@ STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", None)
 STRIPE_PRICE_ID = os.environ.get("STRIPE_PRICE_ID", None)
 
 
-# {{ cookiecutter.project_name }} config
+# barbecue_jam config
 
 AUTH_USER_NAME_MAX_LENGTH = int(os.environ.get("AUTH_USER_NAME_MAX_LENGTH", "150"))

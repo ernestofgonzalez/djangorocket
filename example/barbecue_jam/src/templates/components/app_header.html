@@ -1,0 +1,88 @@
+
+    <header class="border-b border-gray-200 bg-[#24292f]">
+        <div class="2xl:container mx-auto px-4 md:px-16">
+            <nav class="relative h-16 z-50 flex justify-between">
+                <div class="flex items-center md:gap-x-12">
+                    <span class="text-2xl text-gray-800 font-semibold">Django Rocket</span>
+                    <div class="hidden md:flex md:gap-x-14">
+                        <a href="" class="flex items-center gap-x-2 group">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 viewBox="0 0 20 20"
+                                 fill="currentColor"
+                                 class="w-4 h-4 text-white group-hover:text-gray-400">
+                                <path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="text-base  font-bold text-white group-hover:text-gray-400">Dashboard</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="flex flex-col items-end">
+                        <button id="dropdown-button"
+                                type="button"
+                                class="group inline-flex items-center"
+                                aria-expanded="false">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 viewBox="0 0 24 24"
+                                 fill="currentColor"
+                                 class="w-7 h-7 rounded-full text-white group-hover:text-gray-400 group-focus:outline group-focus:outline-offset-1 group-focus:outline-gray-200">
+                                <path fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" clip-rule="evenodd" />
+                            </svg>
+                            <svg class="text-white h-4 w-4 group-hover:text-gray-400"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 viewBox="0 0 20 20"
+                                 fill="currentColor"
+                                 aria-hidden="true">
+                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <div id="dropdown-menu"
+                             class="hidden absolute z-10 transform translate-y-7">
+                            <div class="border w-48 border-gray-200 rounded bg-white shadow">
+                                <div class="py-3 px-4">
+                                    <p class="text-sm  font-normal text-gray-700">Logged in as</p>
+                                    <p class="text-sm  font-medium text-gray-900">{{ request.user.name }}</p>
+                                </div>
+                                <div class="border-t border-t-gray-200 py-1 flex flex-col">
+                                    <a href=""
+                                       class="py-1 px-4 text-sm  hover:text-white hover:bg-violet-700">Help</a>
+                                    <a href=""
+                                       class="py-1 px-4 text-sm  hover:text-white hover:bg-violet-700">Settings</a>
+                                </div>
+                                <div class="border-t border-t-gray-200 py-1 flex flex-col">
+                                    <form action="{% url '
+                                    
+                                    barbecue_jam
+                                    
+                                        -auth:logout' %}" method="post">
+                                        {% csrf_token %}
+                                        <div class="py-1 px-4 text-sm  hover:text-white hover:bg-violet-700">
+                                            <input type="submit" value="Log out"/>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+    <script>
+    document.addEventListener("click", (e) => {
+        var button = document.getElementById("dropdown-button")
+        var menu = document.getElementById("dropdown-menu")
+        if (e.target === button || button.contains(e.target)) {
+            if (menu.classList.contains("hidden")) {
+                menu.classList.remove("hidden")
+            }
+        } else if (e.target === menu || menu.contains(e.target)) {
+            // Do nothing with document
+        } else {
+            if (!menu.classList.contains("hidden")) {
+                menu.classList.add("hidden")
+            }
+        }
+    })
+    </script>
+
