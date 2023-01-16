@@ -1,21 +1,9 @@
 {% raw %}
     {% extends "base_settings.html" %}
-    {% load
-{% endraw %}
-{{ cookiecutter.project_slug }}
-{% raw %}
-    _utils_math %}
-    {% load
-{% endraw %}
-{{ cookiecutter.project_slug }}
-{% raw %}
-    _timestamp %}
+    {% load {% endraw -%}{{ cookiecutter.project_slug }}{%- raw -%}_utils_math %}
+    {% load {% endraw -%}{{ cookiecutter.project_slug }}{%- raw -%}_utils_timestamp %}
     {% block head %}
-        <title>Billing and plans -
-        {% endraw %}
-        {{ cookiecutter.project_name }}
-        {% raw %}
-        </title>
+        <title>Billing and plans - {% endraw -%}{{ cookiecutter.project_name }}{%- raw -%}</title>
         <meta name="robots" content="noindex,nofollow">
     {% endblock %}
     {% block main %}
@@ -43,22 +31,16 @@
                         </dd>
                         <div>
                             {% if request.user.subscription.cancel_at_period_end %}
-                                <form action="{% url '
-                                {% endraw %}
-                                {{ cookiecutter.project_slug }}
-                                {% raw %}
-                                    -billing:reactivate-subscription' %}?success=/settings/billing/" method="post">
+                                <form action="{% url '{%- endraw -%}{{ cookiecutter.project_slug }}{%- raw -%}-billing:reactivate-subscription' %}?success=/settings/billing/"
+                                      method="post">
                                     {% csrf_token %}
                                     <input type="submit"
                                            value="Reactivate subscription"
                                            class="text-xs text-blue-600 hover:text-gray-800 font-semibold underline"/>
                                 </form>
                             {% else %}
-                                <form action="{% url '
-                                {% endraw %}
-                                {{ cookiecutter.project_slug }}
-                                {% raw %}
-                                    -billing:cancel-subscription' %}?success=/settings/billing/" method="post">
+                                <form action="{% url '{%- endraw -%}{{ cookiecutter.project_slug }}{%- raw -%}-billing:cancel-subscription' %}?success=/settings/billing/"
+                                      method="post">
                                     {% csrf_token %}
                                     <input type="submit"
                                            value="Cancel susbcription"
@@ -122,11 +104,9 @@
                 <div>
                     <h3 class="text-xl md:text-2xl font-semibold text-gray-900">Billing information</h3>
                 </div>
-                <form action="{% url '
-                {% endraw %}
-                {{ cookiecutter.project_slug }}
-                {% raw %}
-                    -billing:billing-settings' %}" method="post" class="mt-4 rounded border-2 border-gray-200 bg-white">
+                <form action="{% url '{%- endraw -%}{{ cookiecutter.project_slug }}{%- raw -%}-billing:billing-settings' %}"
+                      method="post"
+                      class="mt-4 rounded border-2 border-gray-200 bg-white">
                     {% csrf_token %}
                     <div class="p-4 md:p-10">
                         <div class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">{{ form }}</div>
