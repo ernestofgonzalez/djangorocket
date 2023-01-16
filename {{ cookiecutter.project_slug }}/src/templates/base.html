@@ -9,6 +9,10 @@
             {% compress css %}
                 {% tailwind_css %}
             {% endcompress %}
+            <script src="https://js.stripe.com/v3/"></script>
+            {% if stripe_publishable_key != None %}
+                <script type="text/javascript">const stripe = Stripe("{{ stripe_publishable_key }}")</script>
+            {% endif %}
             <link rel="icon"
                   type="image/svg+xml"
                   href="{% static 'img/favicon/favicon.svg' %}">

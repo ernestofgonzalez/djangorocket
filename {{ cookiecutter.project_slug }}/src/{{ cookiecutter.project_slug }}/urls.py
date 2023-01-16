@@ -8,6 +8,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.index_view, name="index"),
     path("", include("{{ cookiecutter.project_slug }}.auth.urls")),
+    path("", include("{{ cookiecutter.project_slug }}.billing.urls")),
 ]
 
 if settings.DEBUG is True:

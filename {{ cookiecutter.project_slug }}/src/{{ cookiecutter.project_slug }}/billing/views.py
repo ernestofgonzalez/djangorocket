@@ -1,6 +1,5 @@
 import stripe
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
@@ -8,7 +7,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
-from {{ cookiecutter.project_slug }}.billing.forms import EditBillingInformationForm
+from {{ cookiecutter.project_slug }}.billing.forms import UpdateBillingInformationForm
 from {{ cookiecutter.project_slug }}.model_loaders import get_stripe_customer_model
 
 
@@ -17,7 +16,6 @@ from {{ cookiecutter.project_slug }}.model_loaders import get_stripe_customer_mo
 @login_required
 def billing_settings_view(request):
     context = {
-        "org": request.user.get_or_create_settings()[0].current_org,
         "current_tab": "billing",
     }
 
@@ -26,7 +24,7 @@ def billing_settings_view(request):
         request.user.stripe_customer.stripe_subscription_id
     )
 
-    form = EditBillingInformationForm(
+    form = UpdateBillingInformationForm(
         request.POST or None,
         initial={
             "name": None,
@@ -66,6 +64,9 @@ def create_subscribe_checkout_view(request):
             cancel_url=domain_url + cancel,
             client_reference_id=request.user.uuid,
             customer=request.user.stripe_customer.stripe_customer_id,
+            customer_update={
+                "address": "auto",
+            },
             mode="setup",
         )
 

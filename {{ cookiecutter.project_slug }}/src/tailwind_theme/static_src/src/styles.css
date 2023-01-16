@@ -32,7 +32,7 @@
     }
 
     .input {
-        @apply appearance-none rounded border-2 border-gray-800 bg-gray-50 px-3 py-2 text-base text-gray-900 placeholder-gray-400 focus:border-violet-500 focus:bg-white focus:outline-none focus:ring-violet-500;
+        @apply appearance-none rounded border-2 border-gray-800 bg-gray-50 px-3 py-2 text-base text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-blue-500;
     }
 
     .label {

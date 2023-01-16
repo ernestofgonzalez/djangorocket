@@ -1,6 +1,8 @@
+import stripe
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils.functional import cached_property
 from phonenumber_field.modelfields import PhoneNumberField
 from {{cookiecutter.project_slug}}.utils import default_uuid
 
@@ -29,3 +31,21 @@ class User(AbstractUser):
 
     class Meta:
         ordering = ["-date_joined"]
+
+    @cached_property
+    def default_payment_method(self):
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        customer = stripe.Customer.retrieve(
+            self.stripe_customer.stripe_customer_id,
+            expand=["invoice_settings.default_payment_method"],
+        )
+        return customer["invoice_settings"]["default_payment_method"]
+
+    @cached_property
+    def subscription(self):
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        subscription = stripe.Subscription.retrieve(
+            self.stripe_customer.stripe_subscription_id,
+            expand=["default_payment_method"],
+        )
+        return subscription

@@ -248,4 +248,6 @@ STRIPE_PRICE_ID = os.environ.get("STRIPE_PRICE_ID", None)
 
 # {{ cookiecutter.project_name }} config
 
+SUBSCRIPTION_TRIAL_PERIOD_DAYS = 14
+
 AUTH_USER_NAME_MAX_LENGTH = int(os.environ.get("AUTH_USER_NAME_MAX_LENGTH", "150"))
