@@ -1,0 +1,117 @@
+{% raw %}
+    {% for error in form.non_field_errors %}
+        <div role="alert" class="mb-2 w-full bg-red-500 py-2 px-4 rounded">
+            <span class="text-white">{{ error }}</span>
+        </div>
+    {% endfor %}
+    <div class="sm:col-span-2">
+        <div>
+            <label for="{{ form.name.id_for_label }}" class="mb-2 label">
+                {{ form.name.label }} <span class="text-red-500">*</span>
+            </label>
+            <input id="id_name"
+                   name="name"
+                   type="text"
+                   value="{{ form.name.value|default_if_none:'' }}"
+                   placeholder="{{ form.name.field.widget.attrs.placeholder }}"
+                   class="block w-full input">
+        </div>
+        {% if form.errors.name %}
+            <ul class="pt-0.5">
+                {% for error in form.errors.name %}<li class="text-sm text-red-500">{{ error|escape }}</li>{% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    <div class="sm:col-span-2">
+        <div>
+            <label for="{{ form.address_line_1.id_for_label }}" class="mb-2 label">
+                {{ form.address_line_1.label }} <span class="text-red-500">*</span>
+            </label>
+            <p class="mb-2 text-sm font-normal text-gray-700">{{ form.address_line_1.field.help_text }}</p>
+            <input id="id_address_line_1"
+                   name="address_line_1"
+                   type="text"
+                   value="{{ form.address_line_1.value|default_if_none:'' }}"
+                   placeholder="{{ form.address_line_1.field.widget.attrs.placeholder }}"
+                   class="block w-full input">
+        </div>
+        {% if form.errors.address_line_1 %}
+            <ul class="pt-0.5">
+                {% for error in form.errors.address_line_1 %}<li class="text-sm text-red-500">{{ error|escape }}</li>{% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    <div class="sm:col-span-2">
+        <div>
+            <label for="{{ form.address_line_2.id_for_label }}" class="mb-2 label">{{ form.address_line_2.label }}</label>
+            <p class="mb-2 text-sm font-normal text-gray-700">{{ form.address_line_2.field.help_text }}</p>
+            <input id="id_address_line_2"
+                   name="address_line_2"
+                   type="text"
+                   value="{{ form.address_line_2.value|default_if_none:'' }}"
+                   placeholder="{{ form.address_line_2.field.widget.attrs.placeholder }}"
+                   class="block w-full input">
+        </div>
+        {% if form.errors.address_line_2 %}
+            <ul class="pt-0.5">
+                {% for error in form.errors.address_line_2 %}<li class="text-sm text-red-500">{{ error|escape }}</li>{% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    <div class="sm:col-span-1">
+        <div>
+            <label for="{{ form.city.id_for_label }}" class="mb-2 label">
+                {{ form.city.label }} <span class="text-red-500">*</span>
+            </label>
+            <input id="id_city"
+                   name="city"
+                   type="text"
+                   value="{{ form.city.value|default_if_none:'' }}"
+                   placeholder="{{ form.city.field.widget.attrs.placeholder }}"
+                   class="block w-full input">
+        </div>
+        {% if form.errors.city %}
+            <ul class="pt-0.5">
+                {% for error in form.errors.city %}<li class="text-sm text-red-500">{{ error|escape }}</li>{% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    <div class="sm:col-span-1">
+        <div>
+            <label for="{{ form.postal_code.id_for_label }}" class="mb-2 label">{{ form.postal_code.label }}</label>
+            <input id="id_postal_code"
+                   name="postal_code"
+                   type="text"
+                   value="{{ form.postal_code.value|default_if_none:'' }}"
+                   placeholder="{{ form.postal_code.field.widget.attrs.placeholder }}"
+                   class="block w-full input">
+        </div>
+        {% if form.errors.postal_code %}
+            <ul class="pt-0.5">
+                {% for error in form.errors.postal_code %}<li class="text-sm text-red-500">{{ error|escape }}</li>{% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    <div class="sm:col-span-1">
+        <label for="{{ form.country.id_for_label }}" class="mb-2 label">
+            {{ form.country.label }} <span class="text-red-500">*</span>
+        </label>
+        <div>
+            <select id="id_country" name="country" class="block w-full input">
+                <option value="" disabled selected>
+                    {{ form.country.field.widget.attrs.placeholder }}
+                </option>
+                {% for x,y in form.fields.country.choices %}
+                    <option value="{{ x }}" {% if form.country.value == x %}selected{% endif %}>
+                        {{ y }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        {% if form.errors.country %}
+            <ul class="pt-0.5">
+                {% for error in form.errors.country %}<li class="text-sm text-red-500">{{ error|escape }}</li>{% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+{% endraw %}

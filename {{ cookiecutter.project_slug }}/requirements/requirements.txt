@@ -39,3 +39,6 @@ phonenumbers==8.13.0
 
 # Short UUID
 shortuuid==1.0.11
+
+# Billing
+stripe==4.2.0

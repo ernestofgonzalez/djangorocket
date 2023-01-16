@@ -1,3 +1,4 @@
+import stripe
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.decorators import login_required
@@ -11,6 +12,7 @@ from {{cookiecutter.project_slug}}.auth.forms import (
     UpdatePasswordForm,
     UpdateUserForm,
 )
+from {{cookiecutter.project_slug}}.model_loaders import get_stripe_customer_model
 
 
 @never_cache
@@ -118,6 +120,25 @@ def register_view(request):
 
                 user.set_password(form.cleaned_data["password"])
                 user.save()
+
+                stripe.api_key = settings.STRIPE_SECRET_KEY
+
+                customer = stripe.Customer.create(
+                    email=user.email,
+                    name=user.name,
+                )
+                susbcription = stripe.Subscription.create(
+                    customer=customer.id,
+                    items=[{"price": settings.STRIPE_PRICE_ID}],
+                    trial_period_days=settings.SUBSCRIPTION_TRIAL_PERIOD_DAYS,
+                )
+
+                StripeCustomer = get_stripe_customer_model()
+                StripeCustomer.objects.create(
+                    user=user,
+                    stripe_customer_id=customer.id,
+                    stripe_subscription_id=susbcription.id,
+                )
 
                 login(request, user)
                 return redirect("index")

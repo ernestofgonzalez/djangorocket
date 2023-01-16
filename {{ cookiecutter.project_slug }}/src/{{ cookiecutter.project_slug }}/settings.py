@@ -56,6 +56,8 @@ INSTALLED_APPS = [
     "tailwind",
     "tailwind_theme",
     "{{ cookiecutter.project_slug }}.auth",
+    "{{ cookiecutter.project_slug }}.billing",
+    "{{ cookiecutter.project_slug }}.utils",
 ]
 
 if DEBUG is True:
@@ -245,5 +247,7 @@ STRIPE_PRICE_ID = os.environ.get("STRIPE_PRICE_ID", None)
 
 
 # {{ cookiecutter.project_name }} config
+
+SUBSCRIPTION_TRIAL_PERIOD_DAYS = 14
 
 AUTH_USER_NAME_MAX_LENGTH = int(os.environ.get("AUTH_USER_NAME_MAX_LENGTH", "150"))

@@ -98,10 +98,10 @@ class RegisterViewTests(TestCase):
         )
 
     def test_post_password_with_less_than_8_characters_displays_error_message(self):
-        url = reverse("tablas-auth:register")
+        url = reverse("{{cookiecutter.project_slug }}-auth:register")
         data = {
             "name": "Ernesto González",
-            "email": "ernesto@tablas.com",
+            "email": "ernesto@example.com",
             "password": "shd72!s",
             "country": "ES",
             "terms": "on",

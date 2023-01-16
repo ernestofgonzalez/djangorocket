@@ -9,11 +9,7 @@
             </div>
             <div class="py-2 space-y-1 border-b-2 border-gray-200">
                 {% if current_tab == "account" %}
-                    <a href="{% url '
-                    {% endraw %}
-                    {{ cookiecutter.project_slug }}
-                    {% raw %}
-                        -auth:account-settings' %}" class="bg-violet-300 hover:bg-violet-400 text-black group flex items-center px-2 py-2 text-base font-medium rounded">
+                    <a href="{% url '{%- endraw -%}{{ cookiecutter.project_slug }}{%- raw -%}-auth:account-settings' %}" class="bg-blue-300 hover:bg-blue-400 text-black group flex items-center px-2 py-2 text-base font-medium rounded">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              fill="none"
                              viewBox="0 0 24 24"
@@ -25,11 +21,7 @@
                         Your account
                     </a>
                 {% else %}
-                    <a href="{% url '
-                    {% endraw %}
-                    {{ cookiecutter.project_slug }}
-                    {% raw %}
-                        -auth:account-settings' %}" class="text-gray-800 hover:bg-violet-400 hover:text-black group flex items-center px-2 py-2 text-base font-medium rounded">
+                    <a href="{% url '{%- endraw -%}{{ cookiecutter.project_slug }}{%- raw -%}-auth:account-settings' %}" class="text-gray-800 hover:bg-blue-400 hover:text-black group flex items-center px-2 py-2 text-base font-medium rounded">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              fill="none"
                              viewBox="0 0 24 24"
@@ -42,11 +34,7 @@
                     </a>
                 {% endif %}
                 {% if current_tab == "security" %}
-                    <a href="{% url '
-                    {% endraw %}
-                    {{ cookiecutter.project_slug }}
-                    {% raw %}
-                        -auth:security-settings' %}" class="bg-violet-300 hover:bg-violet-400 text-black group flex items-center px-2 py-2 text-base font-medium rounded">
+                    <a href="{% url '{%- endraw -%}{{ cookiecutter.project_slug }}{%- raw -%}-auth:security-settings' %}" class="bg-blue-300 hover:bg-blue-400 text-black group flex items-center px-2 py-2 text-base font-medium rounded">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              fill="none"
                              viewBox="0 0 24 24"
@@ -58,11 +46,7 @@
                         Password
                     </a>
                 {% else %}
-                    <a href="{% url '
-                    {% endraw %}
-                    {{ cookiecutter.project_slug }}
-                    {% raw %}
-                        -auth:security-settings' %}" class="text-gray-800 hover:bg-violet-400 hover:text-black group flex items-center px-2 py-2 text-base font-medium rounded">
+                    <a href="{% url '{%- endraw -%}{{ cookiecutter.project_slug }}{%- raw -%}-auth:security-settings' %}" class="text-gray-800 hover:bg-blue-400 hover:text-black group flex items-center px-2 py-2 text-base font-medium rounded">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              fill="none"
                              viewBox="0 0 24 24"
@@ -75,11 +59,7 @@
                     </a>
                 {% endif %}
                 {% if current_tab == "email" %}
-                    <a href="{% url '
-                    {% endraw %}
-                    {{ cookiecutter.project_slug }}
-                    {% raw %}
-                        -auth:email-settings' %}" class="bg-violet-300 hover:bg-violet-400 text-black group flex items-center px-2 py-2 text-base font-medium rounded">
+                    <a href="{% url '{%- endraw -%}{{ cookiecutter.project_slug }}{%- raw -%}-auth:email-settings' %}" class="bg-blue-300 hover:bg-blue-400 text-black group flex items-center px-2 py-2 text-base font-medium rounded">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              fill="none"
                              viewBox="0 0 24 24"
@@ -91,11 +71,7 @@
                         Emails
                     </a>
                 {% else %}
-                    <a href="{% url '
-                    {% endraw %}
-                    {{ cookiecutter.project_slug }}
-                    {% raw %}
-                        -auth:email-settings' %}" class="text-gray-800 hover:bg-violet-400 hover:text-black group flex items-center px-2 py-2 text-base font-medium rounded">
+                    <a href="{% url '{%- endraw -%}{{ cookiecutter.project_slug }}{%- raw -%}-auth:email-settings' %}" class="text-gray-800 hover:bg-blue-400 hover:text-black group flex items-center px-2 py-2 text-base font-medium rounded">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              fill="none"
                              viewBox="0 0 24 24"
@@ -114,7 +90,7 @@
             <div class="space-y-1">
                 {% if current_tab == "billing" %}
                     <a href=""
-                       class="bg-violet-300 hover:bg-violet-400 text-black group flex items-center px-2 py-2 text-base font-medium rounded">
+                       class="bg-blue-300 hover:bg-blue-400 text-black group flex items-center px-2 py-2 text-base font-medium rounded">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              fill="none"
                              viewBox="0 0 24 24"
@@ -126,8 +102,8 @@
                         Billing and plans
                     </a>
                 {% else %}
-                    <a href=""
-                       class="text-gray-800 hover:bg-violet-400 hover:text-black group flex items-center px-2 py-2 text-base font-medium rounded">
+                    <a href="{% url '{%- endraw -%}{{ cookiecutter.project_slug }}{%- raw -%}-billing:biling-settings' %}"
+                       class="text-gray-800 hover:bg-blue-400 hover:text-black group flex items-center px-2 py-2 text-base font-medium rounded">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              fill="none"
                              viewBox="0 0 24 24"

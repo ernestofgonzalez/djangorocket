@@ -19,8 +19,7 @@
                         <span>Go to dashboard</span>
                     </a>
                 {% else %}
-                    <a href="{% url 'tablas-auth:login' %}"
-                       class="btn btn-white bg-transparent btn-small lg:btn-medium">
+                    <a href="{% url '{%- endraw -%}{{ cookiecutter.project_slug }}{%- raw -%}-auth:login' %}" class="btn btn-white bg-transparent btn-small lg:btn-medium">
                         <span>Log in</span>
                     </a>
                 {% endif %}
