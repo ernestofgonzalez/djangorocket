@@ -20,7 +20,23 @@ For detailed information on usage and third-party integrations check the [full d
 
 ## Requirements
 
-To get started, you need to install [cookiecutter](https://github.com/cookiecutter/cookiecutter). I'd recommend doing so using [pip](https://pypi.org/project/cookiecutter/).
+To get started, you need to install the dependencies
+- [cookiecutter](https://github.com/cookiecutter/cookiecutter) 
+- [django](https://github.com/django/django). 
+
+You can install them via [pip](https://github.com/pypa/pip)
+
+```bash
+$ pip install cookiecutter==2.1.1 django==4.1.4
+```
+
+or you can use the requirements file
+
+```bash
+$ pip install -r requirements/requirements.txt
+```
+
+> **_NOTE:_** Django Rocket works with other versions of Cookiecutter and Django, but as it lacks extensive test coverage, for now it's better to stick to the mentioned versions.
 
 ## Usage
 
@@ -39,5 +55,3 @@ project_slug [soup_shop]: soup_shop
 You should see your project directory. All it's left to doo is to fill to create a `.env` file. Make sure you enter a value for all the keys in the `.env.example` file.
 
 Check out the [full documentation](https://ernestofgonzalez.github.io/djangorocket/) for comprehensive coverage of features and integrations.
-
-
