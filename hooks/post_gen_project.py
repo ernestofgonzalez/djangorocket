@@ -6,7 +6,7 @@ def main():
         file.writelines(
             s + "\n"
             for s in [
-                "#Django",
+                "# Django",
                 'SECRET_KEY="{0}"'.format(get_random_secret_key()),
                 "DEBUG=True",
                 "SECURE_SSL_REDIRECT=False",
