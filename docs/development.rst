@@ -11,6 +11,7 @@ After you have generated your project, there are a few things missing in your de
 * Run database migrations
 * Create and connect a Redis instance
 * Set up a Stripe project and product
+* Install Tailwind dependencies
 
 We will walk you through each step with what we consider the faster approach. If you know how to do it in another way, fell free to deviate.
 
@@ -49,7 +50,6 @@ Your initial project ships with a :code:`docker-compose.yml` file in the root. H
          image: postgres:latest
          restart: always
          environment:
-            - POSTGRES_NAME=${POSTGRES_NAME}
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
             - POSTGRES_DB=${POSTGRES_DB}
          ports:
@@ -63,11 +63,11 @@ Your initial project ships with a :code:`docker-compose.yml` file in the root. H
          ports:
             - "6379:6379"
 
-Since Django Rocket also ships with a pre-populated :code:`.env` file, the :code:`POSTGRES_NAME`, :code:`POSTGRES_PASSWORD` and :code:`POSTGRES_DB` environment variables have already been set for you. All is left to do is run compose
+Since Django Rocket also ships with a pre-populated :code:`.env` file, the :code:`POSTGRES_PASSWORD` and :code:`POSTGRES_DB` environment variables have already been set for you. All is left to do is run compose
 
 .. code-block:: sh
 
-   docker compose run
+   docker compose up
 
 Now that the database is up we can run the project migrations.
 
@@ -109,15 +109,33 @@ The final step is to create a product. Navigate to the `Products`_ tab. Click on
 
 Fill all the information for your product and once you are done hit save. Then collect the price id and set it in your :code:`.env` under the key :code:`STRIPE_PRICE_ID` 
 
-And that's it with Stripe.
+And that's it with Stripe. We move to Tailwind dependencies
+
+Install Tailwind dependencies
+-----------------------------
+
+To Install Tailwind dependencies head over to the terminal 
+
+.. code:: sh 
+
+   python src/manage.py tailwind install
+
+Now you are ready to run your project
 
 Running the project
 -------------------
 
-Now you are ready to run your project. Head to the terminal and under the root directory 
+There are two processes you need running while developing. The first one watches your styles and writes to your stylesheets to include relevant Tailwind utilities 
+
+.. code:: sh 
+
+   python src/manage.py tailwind start
+
+The second one is your familiar Django server
 
 .. code:: sh 
 
    python src/manage.py runserver
 
+That's it for setting up your development environment. 
 
