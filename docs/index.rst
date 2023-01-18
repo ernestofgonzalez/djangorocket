@@ -40,11 +40,77 @@ To build your project with cookiecutter
 
    cookiecutter gh:ErnestoFGonzalez/djangorocket
 
+You'll be prompted to enter some information
+
+.. code-block:: sh
+
+   project_name [My Project]: 
+   project_slug [my_project]:
+
+
+Output
+------
+
+Running this command will create a directory called :code:`my_project` inside the current folder. Inside :code:`my_project`, you'll have the initial project structure:
+
+::
+
+   my_project
+   ├── requirements
+   │  ├── requiremens-dev.txt
+   │  ├── requiremens-docs.txt
+   │  ├── requiremens-linting.txt
+   │  ├── requiremens-testing.txt
+   │  └── requirements.txt
+   ├── src
+   │  ├── my_project
+   │  │  ├── auth 
+   │  │  ├── billing
+   │  │  ├── utils
+   │  │  ├── __init__.py
+   │  │  ├── asgi.py
+   │  │  ├── celery.py
+   │  │  ├── context_processors.py
+   │  │  ├── model_loaders.py
+   │  │  ├── settings.py
+   │  │  ├── urls.py
+   │  │  ├── views.py
+   │  │  └──wsgi.py
+   │  ├── static
+   │  ├── tailwind_theme
+   │  ├── templates
+   │  └── manage.py    
+   ├── .env
+   ├── .env.example
+   ├── requiremens.txt
+   └── runtime.txt
+
+For a deep dive, see :doc:`Initial project structure <initial-project-structure>`.
+
+Start developing
+----------------
+
+In order to get started with your development there are a few things you need to do first:
+
+* Install requirements
+* Create and connect a Postgres database
+* Create and connect a Redis instance
+* Set up a Stripe project and product
+* Run database migrations
+
+License
+-------
+
+Django Rocket is distributed under the Apache License 2.0. You can `read the full license here`_.
+
+.. _read the full license here: https://github.com/ErnestoFGonzalez/djangorocket/blob/main/LICENSE.md
 
 .. toctree::
    :hidden:
 
    self
+   initial-project-structure
+   development
    changelog
 
 
