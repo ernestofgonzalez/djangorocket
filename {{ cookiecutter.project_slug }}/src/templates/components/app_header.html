@@ -50,7 +50,8 @@
                                        class="py-1 px-4 text-sm  hover:text-white hover:bg-violet-700">Settings</a>
                                 </div>
                                 <div class="border-t border-t-gray-200 py-1 flex flex-col">
-                                    <form action="{% url '{%- endraw -%}{{ cookiecutter.project_slug }}{%- raw -%}-auth:logout' %}" method="post">
+                                    <form action="{% url '{%- endraw -%}{{ cookiecutter.project_slug }}{%- raw -%}-auth:logout' %}"
+                                          method="post">
                                         {% csrf_token %}
                                         <div class="py-1 px-4 text-sm  hover:text-white hover:bg-violet-700">
                                             <input type="submit" value="Log out"/>
