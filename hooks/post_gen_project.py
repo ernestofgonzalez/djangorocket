@@ -1,7 +1,12 @@
+from uuid import uuid4
 from django.core.management.utils import get_random_secret_key
 
 
 def main():
+    postgres_name = uuid4().hex
+    postgres_password = uuid4().hex
+    postgres_db = uuid4().hex
+
     with open(".env", "w") as file:
         file.writelines(
             s + "\n"
@@ -16,7 +21,14 @@ def main():
                 'INTERNAL_IPS=["127.0.0.1"]',
                 "",
                 "# Databases",
-                "DATABASE_URL=",
+                "DATABASE_URL=postgresql://{0}:{1}@localhost:5432/{2}".format(
+                    postgres_name, 
+                    postgres_password,
+                    postgres_db
+                ),
+                "POSTGRES_NAME={0}".format(postgres_name),
+                "POSTGRES_PASSWORD={0}".format(postgres_password),
+                "POSTGRES_DB={0}".format(postgres_db),
                 "",
                 "# Celery",
                 'CELERY_BROKER_URL="redis://localhost/"',
