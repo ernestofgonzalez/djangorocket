@@ -92,11 +92,13 @@ Start developing
 
 In order to get started with your development there are a few things you need to do first:
 
-* Install requirements
+* Install project requirements
 * Create and connect a Postgres database
+* Run database migrations
 * Create and connect a Redis instance
 * Set up a Stripe project and product
-* Run database migrations
+
+Go to :doc:`Development <development>` for a step-by-step guide.
 
 License
 -------
