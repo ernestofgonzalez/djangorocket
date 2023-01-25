@@ -110,6 +110,7 @@ def login_view(request):
 @require_http_methods(["GET", "POST"])
 def register_view(request):
     context = {}
+    context["google_oauth_client_id"] = settings.GOOGLE_OAUTH_CLIENT_ID
 
     form = RegisterForm(request.POST or None)
     context["form"] = form
