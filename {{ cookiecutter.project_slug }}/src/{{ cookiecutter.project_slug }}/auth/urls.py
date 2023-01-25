@@ -5,6 +5,7 @@ app_name = "{{ cookiecutter.project_slug }}-auth"
 
 urlpatterns = [
     path("login/", views.login_view, name="login"),
+    path("login/google/", views.signin_with_google_view, name="signin-with-google"),
     path("logout/", views.logout_view, name="logout"),
     path("register/", views.register_view, name="register"),
     path("settings/account/", views.account_settings_view, name="account-settings"),
