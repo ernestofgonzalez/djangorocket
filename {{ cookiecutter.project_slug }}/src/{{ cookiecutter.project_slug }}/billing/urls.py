@@ -1,6 +1,5 @@
 from django.urls import path
-
-from {{ cookiecutter.project_slug }}.billing import views
+from {{cookiecutter.project_slug}}.billing import views
 
 app_name = "{{ cookiecutter.project_slug }}-billing"
 

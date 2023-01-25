@@ -1,4 +1,5 @@
 from uuid import uuid4
+
 from django.core.management.utils import get_random_secret_key
 
 
@@ -21,8 +22,7 @@ def main():
                 "",
                 "# Databases",
                 "DATABASE_URL=postgresql://postgres:{0}@localhost:5432/{1}".format(
-                    postgres_password,
-                    postgres_db
+                    postgres_password, postgres_db
                 ),
                 "POSTGRES_PASSWORD={0}".format(postgres_password),
                 "POSTGRES_DB={0}".format(postgres_db),
