@@ -6,6 +6,10 @@ from django.db import IntegrityError
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
+from google.auth.transport import requests
+from google.oauth2 import id_token
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from {{cookiecutter.project_slug}}.auth.forms import (
     LoginForm,
     RegisterForm,
@@ -156,3 +160,45 @@ def register_view(request):
 def logout_view(request):
     logout(request)
     return redirect("index")
+
+
+@api_view(["POST"])
+def signin_with_google_view(request):
+    csrf_token_cookie = request.COOKIES.get('g_csrf_token', None)
+    if not csrf_token_cookie:
+        return Response({"message": "No CSRF token in Cookie."})
+
+    csrf_token_body = request.POST.get('g_csrf_token', None)
+    if not csrf_token_body:
+        return Response({"message": "No CSRF token in post body."})
+    if csrf_token_cookie != csrf_token_body:
+        return Response({"message": "Failed to verify double submit cookie."})
+
+    id_token_body = request.POST.get('credential', None)
+    try:
+        idinfo = id_token.verify_oauth2_token(id_token_body, requests.Request(), settings.GOOGLE_OAUTH_CLIENT_ID)
+    except ValueError:
+        return Response({"message": "Invalid token."})
+
+    User = get_user_model()
+    try:
+        user = User.objects.get(email=idinfo["email"])
+
+        if request.user == user:
+            # Returning federated user
+            login(request, user)
+            return redirect("index")
+        else:
+            pass
+    except User.DoesNotExist:
+        user = User.objects.create(
+            name=idinfo["name"],
+            email=idinfo["email"],
+        )
+
+        # https://developers.google.com/identity/gsi/web/guides/overview
+        # TODO: 1. is the token supposed to be saved?
+        # TODO: 2. register user
+        # TODO: 3. consider case where user already had account without Google
+        # TODO: 4. this endpoint should not be an api_view
+
