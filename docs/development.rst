@@ -11,6 +11,7 @@ After you have generated your project, there are a few things missing in your de
 * Run database migrations
 * Create and connect a Redis instance
 * Set up a Stripe project and product
+* Set up Sign in with Google
 * Install Tailwind dependencies
 
 We will walk you through each step with what we consider the faster approach. If you know how to do it in another way, fell free to deviate.
@@ -109,7 +110,25 @@ The final step is to create a product. Navigate to the `Products`_ tab. Click on
 
 Fill all the information for your product and once you are done hit save. Then collect the price id and set it in your :code:`.env` under the key :code:`STRIPE_PRICE_ID` 
 
-And that's it with Stripe. We move to Tailwind dependencies
+And that's it with Stripe. Next is Sign in with Google 
+
+
+Set up Sign in with Google
+--------------------------
+
+Open the `Google Developer Console`_. If you don't have a developer account sign up for one.
+
+.. _Google Developer Console: https://console.developers.google.com
+
+`Create a new project`_ for your website. Once you have your project created navigate to `APIs & Services`_, select the `Credentials`_ tab and create a new OAuth client ID with Web application application type. Assign the resulting client id and secret to :code:`GOOGLE_OAUTH_CLIENT_ID` and :code:`GOOGLE_OAUTH_CLIENT_SECRET` respectively in your :code:`.env` file.
+
+.. _Create a new project: https://console.cloud.google.com/projectcreate
+.. _APIs & Services: https://console.cloud.google.com/apis/dashboard
+.. _Credentials: https://console.cloud.google.com/apis/credentials
+
+Add :code:`http://localhost` and :code:`http://localhost:8000` to the Authorized JavaScript origins and :code:`http://localhost:8000/login/google/` to Authorized redirect URIs and make sure to hit save.
+
+We're done with Google. The last step is installing Tailwind dependencies.
 
 Install Tailwind dependencies
 -----------------------------
