@@ -9,14 +9,38 @@
 {% block body %}
     <div class="2xl:container mx-auto px-4 md:px-16 py-5 md:py-10">
         <main class="mx-auto max-w-md rounded border-2 border-[#FFC894] bg-[#FFE2C7] py-10 px-10">
-            <h2 class="mb-5 text-center text-2xl font-bold text-gray-900">
-                Log in to continue using
-            {% endraw -%}
-            {{ cookiecutter.project_name }}{%- raw %}
+            <h2 class="mb-10 tracking-tighter text-center text-3xl font-bold text-gray-900">
+                Welcome back
         </h2>
+
+        <div id="g_id_onload"
+                data-client_id="{{ google_oauth_client_id }}"
+                data-context="signin"
+                data-ux_mode="redirect"
+                data-login_uri="{% url '{%- endraw -%}{{ cookiecutter.project_slug }}{%- raw -%}-auth:signin-with-google' %}?next=/login/"
+                data-auto_select="true"
+                data-auto_prompt="true"
+                data-itp_support="true">
+            </div>
+            <div class="g_id_signin"
+                data-type="standard"
+                data-size="large"
+                data-theme="filled_blue"
+                data-text="signin_with"
+                data-shape="rectangular"
+                data-logo_alignment="left">
+            </div>
+            
+            <div class="relative flex mt-2 py-3 items-center">
+                <div class="flex-grow border-t border-gray-400"></div>
+                <span class="flex-shrink mx-4 text-sm text-gray-700">or </span>
+                <div class="flex-grow border-t border-gray-400"></div>
+            </div>
+
+            <h2 class="mb-2 text-center text-lg font-bold text-gray-900">Sign in with your email address</h2>
         <form action="{% url '{%- endraw -%}{{ cookiecutter.project_slug }}{%- raw -%}-auth:login' %}"
               method="post"
-              class="mt-10 grid grid-cols-1 gap-y-3">
+              class="grid grid-cols-1 gap-y-3">
             {% csrf_token %}
             {{ form }}
             <div class="mt-5">
