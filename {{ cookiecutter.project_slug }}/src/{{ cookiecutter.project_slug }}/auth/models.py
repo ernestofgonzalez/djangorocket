@@ -22,7 +22,11 @@ class User(AbstractUser):
 
     phone_number = PhoneNumberField(unique=True, null=True, blank=False)
 
-    email = models.EmailField(max_length=254, unique=True, null=False, blank=False)
+    email = models.EmailField(max_length=255, unique=True, null=False, blank=False)
+
+    google_id = models.CharField(
+        null=True, blank=False, max_length=255,
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = [
