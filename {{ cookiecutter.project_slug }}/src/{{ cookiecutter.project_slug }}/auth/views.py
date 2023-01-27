@@ -1,10 +1,10 @@
-import stripe
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 from {{cookiecutter.project_slug}}.auth.forms import (
     LoginForm,
@@ -12,7 +12,8 @@ from {{cookiecutter.project_slug}}.auth.forms import (
     UpdatePasswordForm,
     UpdateUserForm,
 )
-from {{cookiecutter.project_slug}}.model_loaders import get_stripe_customer_model
+from {{cookiecutter.project_slug}}.auth.utils import validate_google_id_token
+from {{cookiecutter.project_slug}}.billing.utils import create_subscription_for_user
 
 
 @never_cache
@@ -88,16 +89,19 @@ def login_view(request):
 
     if request.method == "POST":
         if form.is_valid():
-            user = authenticate(
-                request,
-                username=form.cleaned_data.get("email", None),
-                password=form.cleaned_data.get("password", None),
-            )
-            if user is not None:
-                login(request, user)
-                return redirect("index")
+            if user.has_usable_password():
+                user = authenticate(
+                    request,
+                    username=form.cleaned_data.get("email", None),
+                    password=form.cleaned_data.get("password", None),
+                )
+                if user is not None:
+                    login(request, user)
+                    return redirect("index")
+                else:
+                    form.add_error(None, "Incorrect email address or password.")
             else:
-                form.add_error(None, "Correo electrónico o password incorrectos.")
+                form.add_error(None, "You registered using your Google Account. Please use Sign In with Google to sign in.")
 
     return render(request, "auth/pages/login.html", context)
 
@@ -106,6 +110,7 @@ def login_view(request):
 @require_http_methods(["GET", "POST"])
 def register_view(request):
     context = {}
+    context["google_oauth_client_id"] = settings.GOOGLE_OAUTH_CLIENT_ID
 
     form = RegisterForm(request.POST or None)
     context["form"] = form
@@ -121,24 +126,7 @@ def register_view(request):
                 user.set_password(form.cleaned_data["password"])
                 user.save()
 
-                stripe.api_key = settings.STRIPE_SECRET_KEY
-
-                customer = stripe.Customer.create(
-                    email=user.email,
-                    name=user.name,
-                )
-                susbcription = stripe.Subscription.create(
-                    customer=customer.id,
-                    items=[{"price": settings.STRIPE_PRICE_ID}],
-                    trial_period_days=settings.SUBSCRIPTION_TRIAL_PERIOD_DAYS,
-                )
-
-                StripeCustomer = get_stripe_customer_model()
-                StripeCustomer.objects.create(
-                    user=user,
-                    stripe_customer_id=customer.id,
-                    stripe_subscription_id=susbcription.id,
-                )
+                create_subscription_for_user(user, settings.SUBSCRIPTION_TRIAL_PERIOD_DAYS)
 
                 login(request, user)
                 return redirect("index")
@@ -156,3 +144,31 @@ def register_view(request):
 def logout_view(request):
     logout(request)
     return redirect("index")
+
+
+@require_POST
+@csrf_exempt
+def signin_with_google_view(request):
+    next = request.POST.get("next", None)
+
+    try:
+        idinfo = validate_google_id_token(request)
+    except Exception as e:
+        if next is None:
+            return redirect("{{cookiecutter.project_slug}}-auth:register")
+        return redirect(next)
+
+    user, created = get_user_model().objects.get_or_create(
+        email=idinfo["email"],
+    )
+
+    if created:
+        user.email = idinfo["name"]
+        user.set_unusable_password()
+        create_subscription_for_user(user, settings.SUBSCRIPTION_TRIAL_PERIOD_DAYS)
+    
+    user.google_id = idinfo["sub"]
+    user.save()
+
+    login(request, user)
+    return redirect("index") 

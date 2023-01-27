@@ -81,7 +81,8 @@ class Migration(migrations.Migration):
                         max_length=128, null=True, region=None, unique=True
                     ),
                 ),
-                ("email", models.EmailField(max_length=254, unique=True)),
+                ("email", models.EmailField(max_length=255, unique=True)),
+                ("google_id", models.CharField(max_length=255, null=True)),
                 (
                     "groups",
                     models.ManyToManyField(

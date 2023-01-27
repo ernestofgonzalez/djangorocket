@@ -6,9 +6,8 @@ from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
-
-from {{ cookiecutter.project_slug }}.billing.forms import UpdateBillingInformationForm
-from {{ cookiecutter.project_slug }}.model_loaders import get_stripe_customer_model
+from {{cookiecutter.project_slug}}.billing.forms import UpdateBillingInformationForm
+from {{cookiecutter.project_slug}}.model_loaders import get_stripe_customer_model
 
 
 @never_cache

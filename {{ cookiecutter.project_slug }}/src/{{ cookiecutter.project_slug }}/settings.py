@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "django_countries",
     "djmoney",
     "phonenumber_field",
+    "rest_framework",
     "storages",
     "tailwind",
     "tailwind_theme",
@@ -94,6 +95,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "{{ cookiecutter.project_slug }}.context_processors.google_oauth_client_id",
                 "{{ cookiecutter.project_slug }}.context_processors.stripe_publishable_key",
             ],
         },
@@ -236,6 +238,12 @@ if os.environ.get("EMAIL_USE_TLS", "True") == "False":
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
+
+
+# Google
+
+GOOGLE_OAUTH_CLIENT_ID = os.environ.get("GOOGLE_OAUTH_CLIENT_ID", None)
+GOOGLE_OAUTH_CLIENT_SECRET = os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET", None)
 
 
 # Stripe

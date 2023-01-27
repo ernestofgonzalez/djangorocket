@@ -1,4 +1,6 @@
 django==4.1.4
+djangorestframework==3.14.0
+django-allauth==0.52.0
 django-cors-headers==3.13.0
 django-countries==7.5
 dj-database-url==0.5.0
@@ -39,6 +41,9 @@ phonenumbers==8.13.0
 
 # Short UUID
 shortuuid==1.0.11
+
+# Google
+google-auth==2.16.0
 
 # Billing
 stripe==4.2.0

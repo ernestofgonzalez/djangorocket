@@ -97,6 +97,7 @@ In order to get started with your development there are a few things you need to
 * Run database migrations
 * Create and connect a Redis instance
 * Set up a Stripe project and product
+* Set up Sign in with Google
 * Install Tailwind dependencies
 
 Go to :doc:`Development <development>` for a step-by-step guide.

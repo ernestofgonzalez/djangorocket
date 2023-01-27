@@ -26,10 +26,7 @@ class UpdateBillingInformationForm(forms.Form):
         widget=forms.TextInput(),
     )
     city = forms.CharField(
-        max_length=255,
-        label="City", 
-        widget=forms.TextInput(), 
-        required=True
+        max_length=255, label="City", widget=forms.TextInput(), required=True
     )
     postal_code = forms.CharField(
         max_length=255,
@@ -38,5 +35,5 @@ class UpdateBillingInformationForm(forms.Form):
     )
     country = CountryField().formfield(
         label="Country",
-        widget=forms.Select(attrs={"placeholder": "Choose your country"})
+        widget=forms.Select(attrs={"placeholder": "Choose your country"}),
     )
