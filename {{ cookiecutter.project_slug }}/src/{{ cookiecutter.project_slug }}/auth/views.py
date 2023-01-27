@@ -89,16 +89,19 @@ def login_view(request):
 
     if request.method == "POST":
         if form.is_valid():
-            user = authenticate(
-                request,
-                username=form.cleaned_data.get("email", None),
-                password=form.cleaned_data.get("password", None),
-            )
-            if user is not None:
-                login(request, user)
-                return redirect("index")
+            if user.has_usable_password():
+                user = authenticate(
+                    request,
+                    username=form.cleaned_data.get("email", None),
+                    password=form.cleaned_data.get("password", None),
+                )
+                if user is not None:
+                    login(request, user)
+                    return redirect("index")
+                else:
+                    form.add_error(None, "Incorrect email address or password.")
             else:
-                form.add_error(None, "Correo electrónico o password incorrectos.")
+                form.add_error(None, "You registered using your Google Account. Please use Sign In with Google to sign in.")
 
     return render(request, "auth/pages/login.html", context)
 
