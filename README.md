@@ -4,48 +4,40 @@
 [![Latest Release](https://img.shields.io/github/v/release/ErnestoFGonzalez/djangorocket)](https://github.com/ErnestoFGonzalez/djangorocket/releases)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/ErnestoFGonzalez/djangorocket/blob/main/LICENSE.md)
 
-_Django Rocket is a Django SaaS boilerplate framework powered by [Cookiecutter](https://github.com/cookiecutter/cookiecutter)_.
+_Django Rocket is a powerful Django SaaS boilerplate framework designed for indie hackers and SaaS companies that need to quickly launch their paywalled software. It leverages the [Cookiecutter](https://github.com/cookiecutter/cookiecutter) templating engine to generate a project structure with commonly used features such as authentication and billing, saving you time and effort_.
 
-Django Rocket is aimed at indie hackers or SaaS companies that want to launch paywalled software __fast__. It saves you tens of hours in tedious work in authentication and billing.
-
-For detailed information on usage and third-party integrations check the [full documentation](https://ernestofgonzalez.github.io/djangorocket/).
+For detailed information on usage and third-party integrations, please refer to the [full documentation](https://djangorocket.com).
 
 ## Features
 
 - Subscriptions 
-- Billing with [Stripe](https://github.com/stripe/stripe-python)
-- Style your templates with [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss) (uses [django-tailwind](https://github.com/timonweb/django-tailwind))
+- Stripe payment integration via [stripe-python](https://github.com/stripe/stripe-python)
+- Customizable templates with [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss)   (powered by [django-tailwind](https://github.com/timonweb/django-tailwind))
 - Custom user model
-- Serve your own static files with [whitenoise](https://github.com/evansd/whitenoise)
+- Static file serving with [whitenoise](https://github.com/evansd/whitenoise)
 
 ## Requirements
 
-To get started, you need to install the dependencies
+Before getting started, make sure to install the following dependencies:
 - [cookiecutter](https://github.com/cookiecutter/cookiecutter) 
 - [django](https://github.com/django/django). 
 
-You can install them via [pip](https://github.com/pypa/pip)
+You can easily install them using [pip](https://github.com/pypa/pip):
 
 ```bash
 $ pip install cookiecutter==2.1.1 django==4.1.4
 ```
 
-> **_NOTE:_** Django Rocket works with other versions of Cookiecutter and Django, but as it lacks extensive test coverage, for now it's better to stick to the mentioned versions.
+> **_NOTE:_** Although Django Rocket works with other versions of Cookiecutter and Django, we recommend using the versions mentioned above, as they are well-tested.
 
 ## Usage
 
-Open your terminal and use [cookiecutter](https://github.com/cookiecutter/cookiecutter) command to create your project 
+To create a new Django Rocket project, simply run the following command in your terminal:
 
 ```bash
 $ cookiecutter gh:ErnestoFGonzalez/djangorocket
 ```
 
-You'll be prompted to enter your project name and project slug. You'll see something like this:
-```bash
-project_name [My Project]: Soup Shop
-project_slug [soup_shop]: soup_shop
-```
+You will be prompted to enter your project name and slug, after which the project structure will be generated. Make sure to fill out the `.env` file with the appropriate values for your project.
 
-You should see your project directory. All it's left to doo is to fill to create a `.env` file. Make sure you enter a value for all the keys in the `.env.example` file.
-
-Check out the [full documentation](https://ernestofgonzalez.github.io/djangorocket/) for comprehensive coverage of features and integrations.
+For comprehensive coverage of features and integrations, check out the [full documentation](https://djangorocket.com).
