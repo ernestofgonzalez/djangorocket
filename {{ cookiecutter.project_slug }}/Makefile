@@ -7,6 +7,8 @@ NO_COLOR=\033[0m
 
 help:
 	@echo "test - run tests quickly with the default Python"
+	@echo "pytest - run tests with pytest"
+	@echo "coverage - get code coverage report"
 	@echo "lint - lint the python code"
 	@echo "format - format the python code"
 	@echo "linttemplates - lint the Django HTML code"
@@ -16,6 +18,24 @@ help:
 test:
 	@echo "${LIGHT_CYAN}Running tests...${NO_COLOR}"
 	python3 src/manage.py test --parallel
+
+# Run tests with pytest
+pytest: 
+	@echo "${LIGHT_CYAN}Running tests with pytest...${NO_COLOR}"
+	pytest --durations=1 -n 8
+
+# Get code coverage report
+coverage:
+	@echo "${LIGHT_CYAN}Running tests and collecting coverage data...${NO_COLOR}"
+	pytest --cov=. -n 8
+	coverage combine
+	@echo "${LIGHT_CYAN}Reporting code coverage data...${NO_COLOR}"
+	coverage report
+	@echo "${LIGHT_CYAN}Creating HTML report...${NO_COLOR}"
+	coverage html
+	@echo "${LIGHT_CYAN}Creating coverage badge...${NO_COLOR}"
+	@rm ./coverage.svg
+	coverage-badge -o coverage.svg
 
 # Lint python code
 lint:
