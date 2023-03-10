@@ -4,7 +4,7 @@
 [![Latest Release](https://img.shields.io/github/v/release/ErnestoFGonzalez/djangorocket)](https://github.com/ErnestoFGonzalez/djangorocket/releases)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/ErnestoFGonzalez/djangorocket/blob/main/LICENSE.md)
 
-_Django Rocket is a powerful Django SaaS boilerplate framework designed for indie hackers and SaaS companies that need to quickly launch their paywalled software. It leverages the [Cookiecutter](https://github.com/cookiecutter/cookiecutter) templating engine to generate a project structure with commonly used features such as authentication and billing, saving you time and effort_.
+_Django Rocket is a powerful Django SaaS boilerplate designed for indie hackers and SaaS companies that need to quickly launch their paywalled software. It leverages the [Cookiecutter](https://github.com/cookiecutter/cookiecutter) templating engine to generate a project structure with commonly used features such as authentication and billing, saving you time and effort_.
 
 For detailed information on usage and third-party integrations, please refer to the [full documentation](https://djangorocket.com).
 
