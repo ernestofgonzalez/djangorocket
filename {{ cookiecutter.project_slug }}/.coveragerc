@@ -1,0 +1,10 @@
+[run]
+omit=
+  venv
+  env
+  docs
+  */migrations/*
+  */tests/*
+  */__init__.py
+
+parallel=True
