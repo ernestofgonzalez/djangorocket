@@ -1,0 +1,27 @@
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+      \.eggs        
+    | \.git          
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+    | env
+    | docs
+  )/
+  | src/manage.py
+)
+'''
+
+[tool.djlint]
+profile = "django"
+exclude = "pyinstrument_profiles/"
