@@ -1,10 +1,30 @@
 import stripe
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.utils.functional import cached_property
 from phonenumber_field.modelfields import PhoneNumberField
 from {{cookiecutter.project_slug}}.utils import default_uuid
+
+
+class UserManager(BaseUserManager):
+    def create_user(self, email, password=None, name=None, **extra_fields):
+        if not email:
+            raise ValueError('Enter an email address')
+        if not name:
+            raise ValueError('Enter a name')
+        email = self.normalize_email(email)
+        user = self.model(email=email, name=name, **extra_fields)
+        user.set_password(password)
+        user.save()
+        return user
+
+    def create_superuser(self, email, name, password):
+        user = self.create_user(email, name=name, password=password)
+        user.is_superuser = True
+        user.is_staff = True
+        user.save()
+        return user
 
 
 class User(AbstractUser):
@@ -27,6 +47,8 @@ class User(AbstractUser):
     google_id = models.CharField(
         null=True, blank=False, max_length=255,
     )
+
+    objects = UserManager()
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = [
