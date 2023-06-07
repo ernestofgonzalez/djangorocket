@@ -4,6 +4,14 @@
 Changelog
 =========
 
+.. _v_0_4_2:
+
+0.4.2 (2023-06-07)
+------------------
+
+* Fixed the missing Sign In with Google button in the `auth/pages/login.html`` template (:issue:`38`)
+* Fixed an incorrect assign of the Google account name to `user.email`` when creating the account with Google (:issue:`38`)
+
 .. _v_0_4_1:
 
 0.4.1 (2023-06-06)

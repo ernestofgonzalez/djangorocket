@@ -9,11 +9,9 @@
 {% block body %}
     <div class="2xl:container mx-auto px-4 md:px-16 py-5 md:py-10">
         <main class="mx-auto max-w-md rounded border-2 border-[#FFC894] bg-[#FFE2C7] py-10 px-10">
-            <h2 class="mb-10 tracking-tighter text-center text-3xl font-bold text-gray-900">
-                Welcome back
-        </h2>
+            <h2 class="mb-10 tracking-tighter text-center text-3xl font-bold text-gray-900">Welcome back</h2>
 
-        <div id="g_id_onload"
+            <div id="g_id_onload"
                 data-client_id="{{ google_oauth_client_id }}"
                 data-context="signin"
                 data-ux_mode="redirect"
@@ -38,7 +36,7 @@
             </div>
 
             <h2 class="mb-2 text-center text-lg font-bold text-gray-900">Sign in with your email address</h2>
-        <form action="{% url '{%- endraw -%}{{ cookiecutter.project_slug }}{%- raw -%}-auth:login' %}"
+            <form action="{% url '{%- endraw -%}{{ cookiecutter.project_slug }}{%- raw -%}-auth:login' %}"
               method="post"
               class="grid grid-cols-1 gap-y-3">
             {% csrf_token %}
@@ -57,5 +55,6 @@
         </div>
     </main>
 </div>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 {% endblock %}
 {% endraw %}
