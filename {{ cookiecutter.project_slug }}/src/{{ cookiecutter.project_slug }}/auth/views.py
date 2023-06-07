@@ -163,7 +163,7 @@ def signin_with_google_view(request):
     )
 
     if created:
-        user.email = idinfo["name"]
+        user.name = idinfo["name"]
         user.set_unusable_password()
         create_subscription_for_user(user, settings.SUBSCRIPTION_TRIAL_PERIOD_DAYS)
     
