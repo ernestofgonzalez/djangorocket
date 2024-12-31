@@ -51,8 +51,13 @@ INSTALLED_APPS = [
     "django_celery_beat",
     "django_countries",
     "djmoney",
+    "django_opensearch_dsl",
+    "hijack",
+    "hijack.contrib.admin",
     "phonenumber_field",
     "rest_framework",
+    "rest_framework.authtoken",
+    "rest_framework_api_key",
     "storages",
     "tailwind",
     "tailwind_theme",
@@ -75,6 +80,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "hijack.middleware.HijackUserMiddleware",
 ]
 
 if DEBUG is True:
@@ -108,6 +114,28 @@ CORS_ORIGIN_ALLOW_ALL = False
 if os.environ.get("CORS_ORIGIN_ALLOW_ALL", "False") == "True":
     CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = json.loads(os.environ.get("CORS_ORIGIN_WHITELIST"))
+
+
+# Django Rest Framework
+# https://www.django-rest-framework.org/
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "{{cookiecutter.project_slug}}.permissions.IsConsumerAuthenticated",
+        "rest_framework.permissions.IsAuthenticated",
+    ),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 100,
+    "DEFAULT_RENDERER_CLASSES": (
+        "rest_framework.renderers.JSONRenderer",
+    ),
+}
+
+API_KEY_CUSTOM_HEADER = "HTTP_X_API_KEY"
 
 
 # Database
