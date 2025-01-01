@@ -2,8 +2,12 @@ import json
 import os
 from pathlib import Path
 
+import boto3
 import dj_database_url
+import sentry_sdk
+from django.utils.translation import gettext_lazy as _
 from dotenv import load_dotenv
+from opensearchpy import AWSV4SignerAuth, RequestsHttpConnection
 
 # Load environment variables from .env file
 load_dotenv(verbose=True)
@@ -151,6 +155,7 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
+LOGIN_REDIRECT_URL = ""
 LOGIN_URL = "/login/"
 LOGOUT = ""
 
@@ -196,6 +201,11 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 
 USE_TZ = True
+
+LANGUAGES = [
+    ("en", _("English")),
+    ("es", _("Spanish")),
+]
 
 
 # Celery Configuration Options
@@ -268,6 +278,52 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
 
 
+# Amazon Web Services configurations
+# https://aws.amazon.com
+
+AWS_ACCOUNT_ID = os.environ.get("AWS_ACCOUNT_ID")
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_STATIC_BUCKET_NAME = os.environ.get("AWS_STORAGE_STATIC_BUCKET_NAME")
+AWS_STORAGE_MEDIA_INPUT_BUCKET_NAME = os.environ.get(
+    "AWS_STORAGE_MEDIA_INPUT_BUCKET_NAME"
+)
+AWS_STORAGE_MEDIA_INPUT_BUCKET_REGION_NAME = os.environ.get(
+    "AWS_STORAGE_MEDIA_INPUT_BUCKET_REGION_NAME"
+)
+AWS_STORAGE_MEDIA_OUTPUT_BUCKET_NAME = os.environ.get(
+    "AWS_STORAGE_MEDIA_OUTPUT_BUCKET_NAME"
+)
+AWS_STORAGE_STATIC_HOST = os.environ.get("AWS_STORAGE_STATIC_HOST", "s3.amazonaws.com")
+AWS_STORAGE_MEDIA_INPUT_HOST = os.environ.get(
+    "AWS_STORAGE_MEDIA_INPUT_HOST", "s3.amazonaws.com"
+)
+AWS_STORAGE_MEDIA_OUTPUT_HOST = os.environ.get(
+    "AWS_STORAGE_MEDIA_OUTPUT_HOST", "s3.amazonaws.com"
+)
+AWS_STORAGE_STATIC_DOMAIN = "%s.%s" % (
+    AWS_STORAGE_STATIC_BUCKET_NAME,
+    AWS_STORAGE_STATIC_HOST,
+)
+AWS_STORAGE_MEDIA_INPUT_DOMAIN = "%s.%s" % (
+    AWS_STORAGE_MEDIA_INPUT_BUCKET_NAME,
+    AWS_STORAGE_MEDIA_INPUT_HOST,
+)
+AWS_STORAGE_MEDIA_OUTPUT_DOMAIN = "%s.%s" % (
+    AWS_STORAGE_MEDIA_OUTPUT_BUCKET_NAME,
+    AWS_STORAGE_MEDIA_OUTPUT_HOST,
+)
+AWS_CLOUD_FRONT_DOMAIN_NAME = os.environ.get("AWS_CLOUD_FRONT_DOMAIN_NAME")
+AWS_CLOUD_FRONT_PRIVATE_KEY = os.environ.get("AWS_CLOUD_FRONT_PRIVATE_KEY")
+AWS_CLOUD_FRONT_KEY_PAIR_ID = os.environ.get("AWS_CLOUD_FRONT_KEY_PAIR_ID")
+AWS_OPEN_SEARCH_HOST = os.environ.get("AWS_OPEN_SEARCH_HOST")
+AWS_OPEN_SEARCH_REGION_NAME = os.environ.get("AWS_OPEN_SEARCH_REGION_NAME")
+AWS_SES_SMTP_USER = os.environ.get("AWS_SES_SMTP_USER")
+AWS_SES_SMTP_PASSWORD = os.environ.get("AWS_SES_SMTP_PASSWORD")
+AWS_SES_REGION_NAME = os.environ.get("AWS_SES_REGION_NAME")
+AWS_SES_REGION_ENDPOINT = os.environ.get("AWS_SES_REGION_ENDPOINT")
+
+
 # Google
 
 GOOGLE_OAUTH_CLIENT_ID = os.environ.get("GOOGLE_OAUTH_CLIENT_ID", None)
@@ -280,6 +336,46 @@ STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", None)
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", None)
 STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", None)
 STRIPE_PRICE_ID = os.environ.get("STRIPE_PRICE_ID", None)
+
+
+# Mixpanel
+
+MIXPANEL_API_TOKEN = os.environ.get("MIXPANEL_API_TOKEN", None)
+
+
+# Django Opensearch DSL
+# https://django-opensearch-dsl.readthedocs.io/en/latest/
+
+OPENSEARCH_DSL = {
+    "default": {
+        "hosts": AWS_OPEN_SEARCH_HOST,
+        "http_auth": AWSV4SignerAuth(
+            boto3.Session(
+                aws_access_key_id=AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+            ).get_credentials(),
+            AWS_OPEN_SEARCH_REGION_NAME,
+            "es",
+        ),
+        "use_ssl": True,
+        "verify_certs": True,
+        "connection_class": RequestsHttpConnection,
+        "pool_maxsize": 20,
+    },
+}
+
+
+# Sentry
+
+SENTRY_DSN = os.environ.get("SENTRY_DSN", None)
+
+sentry_sdk.init(
+    dsn=SENTRY_DSN,
+    traces_sample_rate=1.0,
+    _experiments={
+        "continuous_profiling_auto_start": False,
+    },
+)
 
 
 # {{ cookiecutter.project_name }} config
