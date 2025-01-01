@@ -4,8 +4,16 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path
 from {{cookiecutter.project_slug}} import views
 
+api_urlpatterns = (
+    [
+        path("", include("{{ cookiecutter.project_slug }}.search.api_urls")),
+    ],
+    "api",
+)
+
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("api/", include(api_urlpatterns)),
     path("", views.index_view, name="index"),
     path("", include("{{ cookiecutter.project_slug }}.auth.urls")),
     path("", include("{{ cookiecutter.project_slug }}.billing.urls")),

@@ -4,6 +4,15 @@
 Changelog
 =========
 
+.. _v_0_5_0:
+
+0.5.0 (2025-01-01)
+------------------
+
+* Added search with OpenSearch
+* Added settings for Mixpanel
+* Added error logging with Sentry
+
 .. _v_0_4_3:
 
 0.4.3 (2023-08-11)

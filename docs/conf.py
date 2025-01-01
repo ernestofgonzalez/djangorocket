@@ -7,9 +7,9 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'Django Rocket'
-copyright = '2023, Ernesto F. González'
+copyright = '2023-2025, Ernesto F. González'
 author = 'Ernesto F. González'
-release = '0.4.3'
+release = '0.5.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
