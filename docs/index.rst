@@ -26,7 +26,7 @@ You can install them via `pip`_
 
 .. code-block:: sh
 
-   pip install cookiecutter==2.1.1 django==4.1.4
+   pip install cookiecutter==2.1.1 django==5.0.6
 
 .. note::
    Django Rocket works with other versions of Cookiecutter and Django, but it lacks extensive test coverage so there may be small errors. For now it's better to stick to the mentioned versions.
@@ -66,6 +66,7 @@ Running this command will create a directory called :code:`my_project` inside th
    │  ├── my_project
    │  │  ├── auth 
    │  │  ├── billing
+   |  |  ├── search
    │  │  ├── utils
    │  │  ├── __init__.py
    │  │  ├── asgi.py
@@ -82,6 +83,12 @@ Running this command will create a directory called :code:`my_project` inside th
    │  └── manage.py    
    ├── .env
    ├── .env.example
+   ├── .flake8
+   ├── .isort.cfg
+   ├── docker-compose.yml
+   ├── Makefile
+   ├── pyproject.toml
+   ├── pytest.ini
    ├── requiremens.txt
    └── runtime.txt
 

@@ -7,9 +7,9 @@ Development
 After you have generated your project, there are a few things missing in your development environment to get started:
 
 * Install project requirements
-* Create and connect a Postgres database
+* Set up Docker containers (Postgres and Redis)
+* Configure OpenSearch DSL
 * Run database migrations
-* Create and connect a Redis instance
 * Set up a Stripe project and product
 * Set up Sign in with Google
 * Install Tailwind dependencies
@@ -29,12 +29,12 @@ Open your terminal in the project root
 
 This will install all the requirements to develop, format, lint and write docs for your project.
 
-Next up is setting up Postgres and Redis.
+Next up is setting up your Docker containers.
 
-Set up Postgres and Redis instances
------------------------------------
+Set up Docker containers
+------------------------
 
-We've built Django Rocket having Postgres in mind so we'll guide you through setting one up. We'll do it using `Docker Compose`_. If you don't have Compose installed, go over to `Install Compose`_ and then come back.
+We use Docker Compose to set up both Postgres and Redis. If you don't have Compose installed, go over to `Install Compose`_ and then come back.
 
 .. _Docker Compose: https://docs.docker.com/compose/
 .. _Install Compose: https://docs.docker.com/compose/install/
@@ -64,18 +64,55 @@ Your initial project ships with a :code:`docker-compose.yml` file in the root. H
          ports:
             - "6379:6379"
 
-Since Django Rocket also ships with a pre-populated :code:`.env` file, the :code:`POSTGRES_PASSWORD` and :code:`POSTGRES_DB` environment variables have already been set for you. All is left to do is run compose
+Since Django Rocket also ships with a pre-populated :code:`.env` file, the :code:`POSTGRES_PASSWORD` and :code:`POSTGRES_DB` environment variables have already been set for you. All is left to do is run compose:
 
 .. code-block:: sh
 
    docker compose up
 
-Now that the database is up we can run the project migrations.
+Configure OpenSearch DSL
+------------------------
+
+Before running migrations, you need to either configure OpenSearch DSL with proper AWS credentials or remove it from your settings.
+
+To configure OpenSearch DSL, make sure you have the following environment variables set in your :code:`.env` file:
+
+* AWS_OPEN_SEARCH_HOST
+* AWS_ACCESS_KEY_ID
+* AWS_SECRET_ACCESS_KEY
+* AWS_OPEN_SEARCH_REGION_NAME
+
+Your :code:`settings.py` should include this configuration:
+
+.. code-block:: python
+
+   OPENSEARCH_DSL = {
+       "default": {
+           "hosts": AWS_OPEN_SEARCH_HOST,
+           "http_auth": AWSV4SignerAuth(
+               boto3.Session(
+                   aws_access_key_id=AWS_ACCESS_KEY_ID,
+                   aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+               ).get_credentials(),
+               AWS_OPEN_SEARCH_REGION_NAME,
+               "es",
+           ),
+           "use_ssl": True,
+           "verify_certs": True,
+           "connection_class": RequestsHttpConnection,
+           "pool_maxsize": 20,
+       },
+   }
+
+If you don't plan to use OpenSearch, you must:
+
+1. Remove the :code:`OPENSEARCH_DSL` setting from your :code:`settings.py`
+2. Remove :code:`'django_opensearch_dsl'` from :code:`INSTALLED_APPS` in :code:`settings.py`
 
 Run migrations
 --------------
 
-To run the project migrations, in your terminal
+Once you've properly configured or removed OpenSearch DSL, you can run the project migrations. In your terminal:
 
 .. code-block:: sh 
 
@@ -85,8 +122,6 @@ Notice we expect the :code:`manage.py` file to be in the :code:`src` directory.
 
 .. note::
    For a detailed description of the initial project directory, see :doc:`Initial project structure <initial-project-structure>`.
-
-The final before being able to run your project is setting up Stripe.
 
 Set up Stripe
 -------------
@@ -110,9 +145,6 @@ The final step is to create a product. Navigate to the `Products`_ tab. Click on
 
 Fill all the information for your product and once you are done hit save. Then collect the price id and set it in your :code:`.env` under the key :code:`STRIPE_PRICE_ID` 
 
-And that's it with Stripe. Next is Sign in with Google 
-
-
 Set up Sign in with Google
 --------------------------
 
@@ -128,8 +160,6 @@ Open the `Google Developer Console`_. If you don't have a developer account sign
 
 Add :code:`http://localhost` and :code:`http://localhost:8000` to the Authorized JavaScript origins and :code:`http://localhost:8000/login/google/` to Authorized redirect URIs and make sure to hit save.
 
-We're done with Google. The last step is installing Tailwind dependencies.
-
 Install Tailwind dependencies
 -----------------------------
 
@@ -138,8 +168,6 @@ To Install Tailwind dependencies head over to the terminal
 .. code:: sh 
 
    python src/manage.py tailwind install
-
-Now you are ready to run your project
 
 Running the project
 -------------------
@@ -156,5 +184,4 @@ The second one is your familiar Django server
 
    python src/manage.py runserver
 
-That's it for setting up your development environment. 
-
+That's it for setting up your development environment.

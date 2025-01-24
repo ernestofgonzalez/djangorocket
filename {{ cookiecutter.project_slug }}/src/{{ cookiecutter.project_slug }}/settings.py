@@ -54,7 +54,6 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_celery_beat",
     "django_countries",
-    "djmoney",
     "django_opensearch_dsl",
     "hijack",
     "hijack.contrib.admin",
