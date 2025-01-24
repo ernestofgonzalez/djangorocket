@@ -8,7 +8,7 @@ After you have generated your project, there are a few things missing in your de
 
 * Install project requirements
 * Set up Docker containers (Postgres and Redis)
-* Configure OpenSearch DSL or remove its settings
+* Configure OpenSearch DSL
 * Run database migrations
 * Set up a Stripe project and product
 * Set up Sign in with Google
@@ -104,10 +104,10 @@ Your :code:`settings.py` should include this configuration:
        },
    }
 
-If you don't plan to use OpenSearch, you must remove the entire :code:`OPENSEARCH_DSL` setting from your :code:`settings.py` before proceeding with migrations.
+If you don't plan to use OpenSearch, you must:
 
-.. note::
-   The migration command will fail if OpenSearch DSL settings are not properly configured or if the setting is not removed entirely.
+1. Remove the :code:`OPENSEARCH_DSL` setting from your :code:`settings.py`
+2. Remove :code:`'django_opensearch_dsl'` from :code:`INSTALLED_APPS` in :code:`settings.py`
 
 Run migrations
 --------------
