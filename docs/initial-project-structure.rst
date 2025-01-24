@@ -36,5 +36,11 @@ After you generate your project, the initial project structure is
    │  └── manage.py    
    ├── .env
    ├── .env.example
+   ├── .flake8
+   ├── .isort.cfg
+   ├── docker-compose.yml
+   ├── Makefile
+   ├── pyproject.toml
+   ├── pytest.ini
    ├── requiremens.txt
    └── runtime.txt
