@@ -66,6 +66,7 @@ Running this command will create a directory called :code:`my_project` inside th
    │  ├── my_project
    │  │  ├── auth 
    │  │  ├── billing
+   |  |  ├── search
    │  │  ├── utils
    │  │  ├── __init__.py
    │  │  ├── asgi.py
@@ -82,6 +83,12 @@ Running this command will create a directory called :code:`my_project` inside th
    │  └── manage.py    
    ├── .env
    ├── .env.example
+   ├── .flake8
+   ├── .isort.cfg
+   ├── docker-compose.yml
+   ├── Makefile
+   ├── pyproject.toml
+   ├── pytest.ini
    ├── requiremens.txt
    └── runtime.txt
 
