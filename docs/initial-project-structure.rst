@@ -19,6 +19,7 @@ After you generate your project, the initial project structure is
    │  ├── [project_slug]
    │  │  ├── auth 
    │  │  ├── billing
+   |  |  ├── search
    │  │  ├── utils
    │  │  ├── __init__.py
    │  │  ├── asgi.py
