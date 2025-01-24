@@ -1,6 +1,6 @@
 # djangorocket
 
-[![Django version](https://img.shields.io/badge/django-4.1.4-blue)](https://github.com/ErnestoFGonzalez/djangorocket)
+[![Django version](https://img.shields.io/badge/django-5.0.6-blue)](https://github.com/ErnestoFGonzalez/djangorocket)
 [![Latest Release](https://img.shields.io/github/v/release/ErnestoFGonzalez/djangorocket)](https://github.com/ErnestoFGonzalez/djangorocket/releases)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/ErnestoFGonzalez/djangorocket/blob/main/LICENSE.md)
 
@@ -25,7 +25,7 @@ Before getting started, make sure to install the following dependencies:
 You can easily install them using [pip](https://github.com/pypa/pip):
 
 ```bash
-$ pip install cookiecutter==2.1.1 django==4.1.4
+$ pip install cookiecutter==2.1.1 django==5.0.6
 ```
 
 > **_NOTE:_** Although Django Rocket works with other versions of Cookiecutter and Django, we recommend using the versions mentioned above, as they are well-tested.
