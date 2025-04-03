@@ -38,6 +38,12 @@ To create a new Django Rocket project, simply run the following command in your 
 $ cookiecutter gh:ErnestoFGonzalez/djangorocket --directory="templates/base"
 ```
 
+or using `djangorocket` as a CLI tool
+
+```bash
+$ djangorocket init
+```
+
 You will be prompted to enter your project name and slug, after which the project structure will be generated. Make sure to fill out the `.env` file with the appropriate values for your project.
 
 For comprehensive coverage of features and integrations, check out the [full documentation](https://djangorocket.com).
