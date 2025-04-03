@@ -17,6 +17,7 @@ exclude = '''
     | dist
     | env
     | docs
+    | templates
   )/
   | manage.py
 )
