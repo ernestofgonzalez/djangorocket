@@ -47,6 +47,11 @@ You'll be prompted to enter some information
    project_name [My Project]: 
    project_slug [my_project]:
 
+Django Rocket is also available as a CLI tool
+
+.. code-block:: sh
+
+   djangorocket init
 
 Output
 ------

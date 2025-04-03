@@ -4,6 +4,13 @@
 Changelog
 =========
 
+.. _v_1_0_0_canary_1:
+
+1.0.0-canary.1 (2025-04-04)
+---------------------------
+
+* Added command line interface with `init`
+
 .. _v_0_6_0:
 
 0.6.0 (2025-01-24)
