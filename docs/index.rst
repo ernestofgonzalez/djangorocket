@@ -38,7 +38,7 @@ To build your project with cookiecutter
 
 .. code-block:: sh 
 
-   cookiecutter gh:ErnestoFGonzalez/djangorocket
+   cookiecutter gh:ErnestoFGonzalez/djangorocket --directory="templates/base"
 
 You'll be prompted to enter some information
 
