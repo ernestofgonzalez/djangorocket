@@ -1,9 +1,11 @@
 import click
 from cookiecutter.main import cookiecutter
 
+
 @click.group()
 def main():
     pass
+
 
 @main.command()
 def init():
