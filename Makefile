@@ -6,10 +6,16 @@ NO_COLOR=\033[0m
 .PHONY: docs
 
 help:
+	@echo "test - run tests"
 	@echo "lint - lint the python code"
 	@echo "format - format the python code"
 	@echo "linttemplates - lint the Django HTML code"
 	@echo "formattemplates - format the Django HTML code"
+
+# Run tests
+test: 
+	@echo "${LIGHT_CYAN}Running tests...${NO_COLOR}"
+	pytest
 
 # Lint python code
 lint:
