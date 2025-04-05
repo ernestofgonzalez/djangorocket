@@ -4,9 +4,9 @@
 Changelog
 =========
 
-.. _v_1_0_0_canary_1:
+.. _v_1_0_0a1:
 
-1.0.0-canary.1 (2025-04-04)
+1.0.0a1 (2025-04-04)
 ---------------------------
 
 * Added command line interface with `init`

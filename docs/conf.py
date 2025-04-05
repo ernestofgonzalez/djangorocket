@@ -9,7 +9,7 @@
 project = 'Django Rocket'
 copyright = '2023-2025, Ernesto F. González'
 author = 'Ernesto F. González'
-release = '1.0.0-canary.1'
+release = '1.0.0a1'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
