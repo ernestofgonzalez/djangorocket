@@ -10,4 +10,4 @@ def main():
 @main.command()
 def init():
     """Run the cookiecutter template in the root folder."""
-    cookiecutter("./templates/base")
+    cookiecutter("./templates/projects/base")
