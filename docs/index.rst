@@ -38,7 +38,7 @@ To build your project with cookiecutter
 
 .. code-block:: sh 
 
-   cookiecutter gh:ErnestoFGonzalez/djangorocket
+   cookiecutter gh:ErnestoFGonzalez/djangorocket --directory="templates/base"
 
 You'll be prompted to enter some information
 
@@ -47,6 +47,11 @@ You'll be prompted to enter some information
    project_name [My Project]: 
    project_slug [my_project]:
 
+Django Rocket is also available as a CLI tool
+
+.. code-block:: sh
+
+   djangorocket init
 
 Output
 ------
