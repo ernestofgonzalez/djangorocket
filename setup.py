@@ -29,7 +29,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'djangorocket = djangorocket.cli:cli',
+            'djangorocket = djangorocket.cli:main',
         ]
     },
     url="https://github.com/ernestofgonzalez/djangorocket",
