@@ -25,6 +25,7 @@ setup(
     install_requires=[
         "click",
         "click-default-group>=1.2.3",
+        "cookiecutter",
     ],
     entry_points={
         'console_scripts': [
