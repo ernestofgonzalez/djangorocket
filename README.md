@@ -35,7 +35,7 @@ $ pip install cookiecutter==2.1.1 django==5.0.6
 To create a new Django Rocket project, simply run the following command in your terminal:
 
 ```bash
-$ cookiecutter gh:ErnestoFGonzalez/djangorocket --directory="templates/base"
+$ cookiecutter gh:ErnestoFGonzalez/djangorocket --directory="templates/projects/base"
 ```
 
 or using `djangorocket` as a CLI tool
