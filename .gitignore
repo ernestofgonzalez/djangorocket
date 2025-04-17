@@ -135,3 +135,4 @@ pyinstrument_profiles/
 .DS_Store
 
 /src/staticfiles/
+templates/**/*.zip
