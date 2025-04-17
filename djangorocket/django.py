@@ -41,8 +41,6 @@ class DjangoManageManager:
         with open(self.manage_path, "r") as file:
             tree = ast.parse(file.read())
 
-        print("manage_path", self.manage_path)
-
         for node in ast.walk(tree):
             if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call):
                 func = node.value
