@@ -11,18 +11,18 @@ class DjangoManageManager:
         Args:
             manage_path (str, optional): The path to the Django manage.py file. Defaults to None.
         """
-        if manage_path is None:
-            manage_path = os.path.join(os.getcwd(), "manage.py")
+        possible_paths = [
+            manage_path,
+            os.path.join(os.getcwd(), "manage.py"),
+            os.path.join(os.getcwd(), "src", "manage.py"),
+        ]
 
-        if not os.path.isfile(manage_path):
-            manage_path = os.path.join(os.getcwd(), "src", "manage.py")
+        for path in possible_paths:
+            if os.path.isfile(path):
+                self.manage_path = path
+                return
 
-        if not os.path.isfile(manage_path):
-            raise FileNotFoundError("manage.py not found in the current directory or src subdirectory.")
-
-        if not os.path.isfile(manage_path):
-            raise FileNotFoundError(f"manage.py file not found: {manage_path}")
-        self.manage_path = manage_path
+        raise FileNotFoundError("manage.py not found in the current directory or src subdirectory.")
 
     def get_default_settings_module(self):
         """
