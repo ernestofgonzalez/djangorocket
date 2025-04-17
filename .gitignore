@@ -134,5 +134,5 @@ pyinstrument_profiles/
 # MacOS
 .DS_Store
 
-/src/staticfiles/
-templates/**/*.zip
+# Data files
+djangorocket/templates/**/*.zip
