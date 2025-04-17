@@ -3,6 +3,43 @@ import os
 import logging
 
 
+class DjangoManageManager:
+    def __init__(self, manage_path=None):
+        """
+        Initialize the DjangoManageManager with the path to the manage.py file.
+
+        Args:
+            manage_path (str, optional): The path to the Django manage.py file. Defaults to None.
+        """
+        if manage_path is None:
+            manage_path = os.path.join(os.getcwd(), "manage.py")
+
+        if not os.path.isfile(manage_path):
+            manage_path = os.path.join(os.getcwd(), "src", "manage.py")
+
+        if not os.path.isfile(manage_path):
+            raise FileNotFoundError("manage.py not found in the current directory or src subdirectory.")
+
+        if not os.path.isfile(manage_path):
+            raise FileNotFoundError(f"manage.py file not found: {manage_path}")
+        self.manage_path = manage_path
+
+    def get_default_settings_module(self):
+        """
+        Retrieve the value set in the os.environ.setdefault('DJANGO_SETTINGS_MODULE', ...) line.
+
+        Returns:
+            str: The value of the default settings module.
+        """
+        with open(self.manage_path, "r") as file:
+            for line in file:
+                if "os.environ.setdefault('DJANGO_SETTINGS_MODULE'" in line or \
+                   'os.environ.setdefault("DJANGO_SETTINGS_MODULE"' in line:
+                    # Extract the value set for DJANGO_SETTINGS_MODULE
+                    return line.split(",")[-1].strip().strip(")").strip('"').strip("'")
+        raise ValueError("DJANGO_SETTINGS_MODULE not found in manage.py")
+
+
 class DjangoSettingsManager:
     def __init__(self, settings_path):
         """
