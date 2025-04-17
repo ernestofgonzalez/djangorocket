@@ -11,15 +11,22 @@ class DjangoManageManager:
         Args:
             manage_path (str, optional): The path to the Django manage.py file. Defaults to None.
         """
-        possible_paths = [
-            manage_path,
+
+        if manage_path is not None:
+            if os.path.isfile(manage_path):
+                self.manage_path = manage_path
+                return
+            
+            raise FileNotFoundError("manage.py not found in the passed `manage_path`.")
+    
+        default_manage_module = [
             os.path.join(os.getcwd(), "manage.py"),
             os.path.join(os.getcwd(), "src", "manage.py"),
         ]
 
-        for path in possible_paths:
-            if os.path.isfile(path):
-                self.manage_path = path
+        for module in default_manage_module:
+            if os.path.isfile(module):
+                self.manage_path = module
                 return
 
         raise FileNotFoundError("manage.py not found in the current directory or src subdirectory.")
@@ -32,11 +39,25 @@ class DjangoManageManager:
             str: The value of the default settings module.
         """
         with open(self.manage_path, "r") as file:
-            for line in file:
-                if "os.environ.setdefault('DJANGO_SETTINGS_MODULE'" in line or \
-                   'os.environ.setdefault("DJANGO_SETTINGS_MODULE"' in line:
-                    # Extract the value set for DJANGO_SETTINGS_MODULE
-                    return line.split(",")[-1].strip().strip(")").strip('"').strip("'")
+            tree = ast.parse(file.read())
+
+        print("manage_path", self.manage_path)
+
+        for node in tree.body:
+            if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call):
+                func = node.value
+                if (
+                    isinstance(func.func, ast.Attribute)
+                    and func.func.attr == "setdefault"
+                    and isinstance(func.func.value, ast.Attribute)
+                    and func.func.value.attr == "environ"
+                    and len(func.args) == 2
+                    and isinstance(func.args[0], ast.Constant)
+                    and func.args[0].value == "DJANGO_SETTINGS_MODULE"
+                ):
+                    if isinstance(func.args[1], ast.Constant):
+                        return func.args[1].value
+
         raise ValueError("DJANGO_SETTINGS_MODULE not found in manage.py")
 
 
