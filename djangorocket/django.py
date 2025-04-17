@@ -43,7 +43,7 @@ class DjangoManageManager:
 
         print("manage_path", self.manage_path)
 
-        for node in tree.body:
+        for node in ast.walk(tree):
             if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call):
                 func = node.value
                 if (
