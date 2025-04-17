@@ -60,16 +60,21 @@ class DjangoManageManager:
 
 
 class DjangoSettingsManager:
-    def __init__(self, settings_path):
+    def __init__(self, settings_module):
         """
         Initialize the DjangoSettingsManager with the path to the settings.py file.
 
         Args:
             settings_path (str): The path to the Django settings.py file.
         """
-        if not os.path.isfile(settings_path):
-            raise FileNotFoundError(f"Settings file not found: {settings_path}")
-        self.settings_path = settings_path
+        if settings_module:
+            if not os.path.isfile(settings_module):
+                raise FileNotFoundError(f"Settings file not found: {settings_module}")
+        else:    
+            manage_module = DjangoManageManager()
+            settings_module = manage_module.get_default_settings_module()
+            
+        self.settings_module = settings_module
         self.tree = self._load_ast()
         self.logger = logging.getLogger(__name__)
 
@@ -80,14 +85,14 @@ class DjangoSettingsManager:
         Returns:
             ast.Module: The parsed AST of the settings.py file.
         """
-        with open(self.settings_path, "r") as file:
+        with open(self.settings_module, "r") as file:
             return ast.parse(file.read())
 
     def _write_ast(self):
         """
         Write the modified AST back to the settings.py file.
         """
-        with open(self.settings_path, "w") as file:
+        with open(self.settings_module, "w") as file:
             file.write(ast.unparse(self.tree))
 
     def _find_installed_apps_node(self):
@@ -104,6 +109,23 @@ class DjangoSettingsManager:
                         if isinstance(node.value, ast.List):
                             return node.value
         raise ValueError("INSTALLED_APPS not found in settings.py")
+
+    def _find_templates_node(self):
+        """
+        Find the AST node for the TEMPLATES variable.
+
+        Returns:
+            ast.Dict: The AST node representing the TEMPLATES dictionary.
+        """
+        for node in self.tree.body:
+            if isinstance(node, ast.Assign):
+                for target in node.targets:
+                    if isinstance(target, ast.Name) and target.id == "TEMPLATES":
+                        if isinstance(node.value, ast.List) and len(node.value.elts) > 0:
+                            first_element = node.value.elts[0]
+                            if isinstance(first_element, ast.Dict):
+                                return first_element
+        raise ValueError("TEMPLATES dictionary not found in settings.py")
 
     def add_app(self, app_name):
         """
