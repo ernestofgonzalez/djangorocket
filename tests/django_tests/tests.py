@@ -25,7 +25,9 @@ class DjangoSettingsManagerTestCase(unittest.TestCase):
 
     def test_add_existing_app(self):
         # Test adding an app that already exists
-        self.manager.add_app("django.contrib.admin")
+        with self.assertLogs(level='INFO') as log:
+            self.manager.add_app("django.contrib.admin")
         with open(self.temp_file.name, "r") as file:
             content = file.read()
         self.assertEqual(content.count("'django.contrib.admin'"), 1)
+        self.assertIn("App 'django.contrib.admin' is already in INSTALLED_APPS.", log.output[0])

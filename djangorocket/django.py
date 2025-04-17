@@ -1,5 +1,6 @@
 import ast
 import os
+import logging
 
 
 class DjangoSettingsManager:
@@ -14,6 +15,7 @@ class DjangoSettingsManager:
             raise FileNotFoundError(f"Settings file not found: {settings_path}")
         self.settings_path = settings_path
         self.tree = self._load_ast()
+        self.logger = logging.getLogger(__name__)
 
     def _load_ast(self):
         """
@@ -59,13 +61,13 @@ class DjangoSettingsManager:
         # Check if the app is already in the list
         for element in installed_apps_node.elts:
             if isinstance(element, ast.Constant) and element.value == app_name:
-                print(f"App '{app_name}' is already in INSTALLED_APPS.")
+                self.logger.warning(f"App '{app_name}' is already in INSTALLED_APPS.")
                 return
 
         # Add the app to the list
         installed_apps_node.elts.append(ast.Constant(value=app_name))
         self._write_ast()
-        print(f"App '{app_name}' added to INSTALLED_APPS.")
+        self.logger.info(f"App '{app_name}' added to INSTALLED_APPS.")
 
     def remove_app(self, app_name):
         """
@@ -84,9 +86,9 @@ class DjangoSettingsManager:
         ]
 
         if len(new_elements) == len(installed_apps_node.elts):
-            print(f"App '{app_name}' is not in INSTALLED_APPS.")
+            self.logger.warning(f"App '{app_name}' is not in INSTALLED_APPS.")
             return
 
         installed_apps_node.elts = new_elements
         self._write_ast()
-        print(f"App '{app_name}' removed from INSTALLED_APPS.")
+        self.logger.info(f"App '{app_name}' removed from INSTALLED_APPS.")
