@@ -117,7 +117,7 @@ class DjangoSettingsManager:
         with open(self.settings_path, "w") as file:
             file.write(ast.unparse(self.tree))
 
-    def _find_base_dir(self):
+    def _find_base_dir_node(self):
         """
         Find the definition of BASE_DIR in the settings.py file.
 
@@ -128,7 +128,7 @@ class DjangoSettingsManager:
             if isinstance(node, ast.Assign):
                 for target in node.targets:
                     if isinstance(target, ast.Name) and target.id == "BASE_DIR":
-                        return target
+                        return node.value
         return None
 
     def _find_installed_apps_node(self):
@@ -215,13 +215,10 @@ class DjangoSettingsManager:
             list: A list of raw string directory paths.
         """
         # Find the BASE_DIR definition
+        base_dir_node = self._find_base_dir_node()
         base_dir = None
-        for node in self.tree.body:
-            if isinstance(node, ast.Assign):
-                for target in node.targets:
-                    if isinstance(target, ast.Name) and target.id == "BASE_DIR":
-                        base_dir = ast.literal_eval(node.value)
-                        break
+        if base_dir_node is not None:
+            base_dir = ast.literal_eval(base_dir_node)
 
         # Find the TEMPLATES node
         templates_node = self._find_templates_node()
