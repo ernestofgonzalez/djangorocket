@@ -57,24 +57,46 @@ class DjangoManageManager:
                         return func.args[1].value
 
         raise ValueError("DJANGO_SETTINGS_MODULE not found in manage.py")
+    
+    def get_settings_path(self):
+        """
+        Get the file path of the settings.py file based on the settings module.
+
+        Returns:
+            str: The absolute path to the settings.py file.
+
+        Raises:
+            FileNotFoundError: If the settings.py file does not exist.
+        """
+        settings_module = self.get_default_settings_module()
+        manage_dir = os.path.dirname(self.manage_path)
+
+        settings_rel_path = settings_module.replace(".", os.sep) + ".py"
+
+        settings_path = os.path.join(manage_dir, settings_rel_path)
+
+        if not os.path.isfile(settings_path):
+            raise FileNotFoundError(f"Settings file not found: {settings_path}")
+
+        return settings_path
 
 
 class DjangoSettingsManager:
-    def __init__(self, settings_module):
+    def __init__(self, settings_path=None):
         """
         Initialize the DjangoSettingsManager with the path to the settings.py file.
 
         Args:
             settings_path (str): The path to the Django settings.py file.
         """
-        if settings_module:
-            if not os.path.isfile(settings_module):
-                raise FileNotFoundError(f"Settings file not found: {settings_module}")
+        if settings_path is not None:
+            if not os.path.isfile(settings_path):
+                raise FileNotFoundError(f"Settings file not found: {settings_path}")
         else:    
             manage_module = DjangoManageManager()
-            settings_module = manage_module.get_default_settings_module()
+            settings_path = manage_module.get_settings_path()
             
-        self.settings_module = settings_module
+        self.settings_path = settings_path
         self.tree = self._load_ast()
         self.logger = logging.getLogger(__name__)
 
@@ -85,14 +107,14 @@ class DjangoSettingsManager:
         Returns:
             ast.Module: The parsed AST of the settings.py file.
         """
-        with open(self.settings_module, "r") as file:
+        with open(self.settings_path, "r") as file:
             return ast.parse(file.read())
 
     def _write_ast(self):
         """
         Write the modified AST back to the settings.py file.
         """
-        with open(self.settings_module, "w") as file:
+        with open(self.settings_path, "w") as file:
             file.write(ast.unparse(self.tree))
 
     def _find_installed_apps_node(self):
