@@ -117,6 +117,20 @@ class DjangoSettingsManager:
         with open(self.settings_path, "w") as file:
             file.write(ast.unparse(self.tree))
 
+    def _find_base_dir(self):
+        """
+        Find the definition of BASE_DIR in the settings.py file.
+
+        Returns:
+            ast.Name or None: The AST node representing BASE_DIR, or None if not found.
+        """
+        for node in self.tree.body:
+            if isinstance(node, ast.Assign):
+                for target in node.targets:
+                    if isinstance(target, ast.Name) and target.id == "BASE_DIR":
+                        return target
+        return None
+
     def _find_installed_apps_node(self):
         """
         Find the AST node for the INSTALLED_APPS variable.
@@ -192,3 +206,19 @@ class DjangoSettingsManager:
         installed_apps_node.elts = new_elements
         self._write_ast()
         self.logger.info(f"App '{app_name}' removed from INSTALLED_APPS.")
+
+    def get_templates_dirs(self):
+        """
+        Retrieve the list of directories specified in the TEMPLATES["DIRS"] setting.
+
+        Returns:
+            list: A list of directories specified in the TEMPLATES["DIRS"] setting.
+        """
+        templates_node = self._find_templates_node()
+
+        for key, value in zip(templates_node.keys, templates_node.values):
+            if isinstance(key, ast.Constant) and key.value == "DIRS":
+                if isinstance(value, ast.List):
+                    return [ast.literal_eval(element) for element in value.elts]
+
+        raise ValueError("DIRS key not found in TEMPLATES setting or is not a list.")
