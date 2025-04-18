@@ -209,16 +209,40 @@ class DjangoSettingsManager:
 
     def get_templates_dirs(self):
         """
-        Retrieve the list of directories specified in the TEMPLATES["DIRS"] setting.
+        Retrieve the raw string values of directories specified in the TEMPLATES["DIRS"] setting.
 
         Returns:
-            list: A list of directories specified in the TEMPLATES["DIRS"] setting.
+            list: A list of raw string directory paths.
         """
+        # Find the BASE_DIR definition
+        base_dir = None
+        for node in self.tree.body:
+            if isinstance(node, ast.Assign):
+                for target in node.targets:
+                    if isinstance(target, ast.Name) and target.id == "BASE_DIR":
+                        base_dir = ast.literal_eval(node.value)
+                        break
+
+        # Find the TEMPLATES node
         templates_node = self._find_templates_node()
 
+        # Extract the DIRS key and compute raw string values
         for key, value in zip(templates_node.keys, templates_node.values):
             if isinstance(key, ast.Constant) and key.value == "DIRS":
                 if isinstance(value, ast.List):
-                    return [ast.literal_eval(element) for element in value.elts]
+                    raw_dirs = []
+                    for element in value.elts:
+                        if isinstance(element, ast.Call) and isinstance(element.func, ast.Attribute):
+                            # Handle os.path.join(BASE_DIR, ...)
+                            if element.func.attr == "join" and len(element.args) > 1:
+                                if isinstance(element.args[0], ast.Name) and element.args[0].id == "BASE_DIR":
+                                    if base_dir is None:
+                                        raise ValueError("BASE_DIR is not defined in settings.py")
+                                    joined_path = os.path.join(base_dir, *[ast.literal_eval(arg) for arg in element.args[1:]])
+                                    raw_dirs.append(joined_path)
+                        elif isinstance(element, ast.Constant):
+                            # Handle plain string paths
+                            raw_dirs.append(ast.literal_eval(element))
+                    return raw_dirs
 
         raise ValueError("DIRS key not found in TEMPLATES setting or is not a list.")
