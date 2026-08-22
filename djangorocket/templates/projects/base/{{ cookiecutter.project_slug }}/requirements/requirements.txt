@@ -23,7 +23,7 @@ factory-boy==3.2.1
 google-auth==2.16.0
 gunicorn==20.0.4
 phonenumbers==8.13.0
-psycopg2==2.9.3
+psycopg2==2.9.10
 python-dotenv==0.15.0
 sentry-sdk==2.18.0
 serpy==0.3.1

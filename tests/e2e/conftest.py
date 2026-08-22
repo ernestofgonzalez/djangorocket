@@ -80,13 +80,17 @@ def baked_project(tmp_path_factory):
 
 
 def _builder_python():
-    """Pick an interpreter that can install the generated project's deps.
+    """Pick an interpreter to install the generated project's deps into.
 
-    The project targets Python 3.10 (see its ``runtime.txt``); it also pins
-    ``psycopg2==2.9.3``, which does not compile on CPython 3.13+, and does not
-    boot cleanly on 3.12. So prefer a 3.10/3.11 interpreter on PATH, then fall
-    back to the interpreter running the tests if it is itself compatible.
-    Returns ``None`` if nothing suitable is available.
+    The generated project targets Python 3.10 (see its ``runtime.txt``) and pins
+    2022-era dependencies (Django 5.0, etc.), so prefer a 3.10/3.11 interpreter
+    on PATH to match what the scaffold actually supports, then fall back to the
+    interpreter running the tests when it is itself 3.11 or older. Returns
+    ``None`` if nothing suitable is available (the fixtures then skip).
+
+    Note: ``requirements.txt`` pins the source ``psycopg2`` (no wheels), so the
+    chosen interpreter's environment must have ``pg_config`` (libpq) on PATH to
+    build it. The ``psycopg2==2.9.10`` pin itself builds fine on modern CPython.
     """
     for name in ("python3.10", "python3.11"):
         found = shutil.which(name)
