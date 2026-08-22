@@ -3,19 +3,25 @@
 LIGHT_CYAN=\033[1;36m
 NO_COLOR=\033[0m
 
-.PHONY: docs
+.PHONY: docs test test-e2e
 
 help:
-	@echo "test - run tests"
+	@echo "test - run tests (fast; e2e tests are skipped)"
+	@echo "test-e2e - run the end-to-end tests (slow; bakes and boots a generated project)"
 	@echo "lint - lint the python code"
 	@echo "format - format the python code"
 	@echo "linttemplates - lint the Django HTML code"
 	@echo "formattemplates - format the Django HTML code"
 
 # Run tests
-test: 
+test:
 	@echo "${LIGHT_CYAN}Running tests...${NO_COLOR}"
 	pytest
+
+# Run end-to-end tests (bakes the template, builds a venv, boots the project)
+test-e2e:
+	@echo "${LIGHT_CYAN}Running end-to-end tests...${NO_COLOR}"
+	pytest --run-e2e -m e2e
 
 # Lint python code
 lint:
