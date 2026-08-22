@@ -39,8 +39,8 @@ coverage:
 	@echo "${LIGHT_CYAN}Creating HTML report...${NO_COLOR}"
 	coverage html
 	@echo "${LIGHT_CYAN}Creating coverage badge...${NO_COLOR}"
-	@rm ./coverage.svg
-	coverage-badge -o coverage.svg
+	coverage xml
+	genbadge coverage -i coverage.xml -o coverage.svg
 
 # Lint python code
 lint:

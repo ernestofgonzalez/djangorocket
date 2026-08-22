@@ -8,7 +8,7 @@ django-browser-reload==1.6.0
 django-celery-beat==2.6.0
 django-compressor==4.1
 django-cors-headers==3.13.0
-django-countries==7.5
+django-countries==7.6.1
 django-debug-toolbar
 django-hijack==3.5.3
 django-json-widget==2.0.1
@@ -21,7 +21,7 @@ djangorestframework==3.14.0
 djangorestframework-api-key==3.0.0
 factory-boy==3.2.1
 google-auth==2.16.0
-gunicorn==20.0.4
+gunicorn==23.0.0
 phonenumbers==8.13.0
 psycopg2==2.9.10
 python-dotenv==0.15.0
