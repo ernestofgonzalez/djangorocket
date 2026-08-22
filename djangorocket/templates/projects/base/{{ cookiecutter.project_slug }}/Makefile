@@ -15,9 +15,14 @@ help:
 	@echo "formattemplates - format the Django HTML code"
 
 # Run Django tests
+# Run from src/ so Django's test runner discovers the apps: manage.py puts src/
+# on sys.path, so tests import as `<project>.<app>...`; starting discovery from
+# the repo root (where src/ is not a package) finds nothing. --parallel is left
+# off because it requires `tblib` to report failing tests (otherwise it dies
+# trying to pickle their tracebacks).
 test:
 	@echo "${LIGHT_CYAN}Running tests...${NO_COLOR}"
-	python3 src/manage.py test --parallel
+	cd src && python3 manage.py test
 
 # Run tests with pytest
 pytest: 
