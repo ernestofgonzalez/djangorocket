@@ -8,6 +8,7 @@ scaffolder → get a Django project → prove that project actually boots.**
 | File | What it does | Speed | When it runs |
 | --- | --- | --- | --- |
 | `test_scaffold.py` | Bakes the base template and asserts structure, slug rendering and that no `{{ cookiecutter.* }}` tokens survive. Only needs cookiecutter. | seconds | every `pytest` run |
+| `test_add_command.py` | Regenerates `accordion.zip` from source, then drives the real `djangorocket add accordion` console script and asserts the UI template is written and fully rendered. Only needs cookiecutter + the installed CLI. | seconds | every `pytest` run |
 | `test_generated_project.py` | Builds a venv, installs the generated project's requirements, then runs `manage.py check`, `migrate` (SQLite) and `collectstatic`. | minutes | only with `--run-e2e` |
 | `test_generated_suite.py` | Runs the generated project's *own* pytest suite. | minutes | only with `--run-e2e` |
 

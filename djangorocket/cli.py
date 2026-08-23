@@ -1,3 +1,5 @@
+import importlib.resources
+
 import click
 from cookiecutter.main import cookiecutter
 
@@ -10,8 +12,9 @@ def main():
 
 @main.command()
 def init():
-    """Run the cookiecutter template in the root folder."""
-    cookiecutter("./templates/projects/base")
+    """Scaffold a new DjangoRocket project in the current directory."""
+    base_template = importlib.resources.files("djangorocket.templates.projects").joinpath("base")
+    cookiecutter(str(base_template))
 
 @main.command()
 @click.argument("components", nargs=-1)

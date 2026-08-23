@@ -1,6 +1,7 @@
 import ast
 import os
 import logging
+from pathlib import Path
 
 
 class DjangoManageManager:
@@ -131,6 +132,91 @@ class DjangoSettingsManager:
                         return node.value
         return None
 
+    def _count_path_steps_from_file(self, node):
+        """
+        Count how many directory levels above the settings file an AST node points to.
+
+        Recognizes the two common ways a Django ``settings.py`` derives a path
+        from ``__file__``:
+
+          * ``Path(__file__).resolve().parent[...]`` - each ``.parent`` climbs
+            one level (``.resolve()``/``.absolute()`` are treated as no-ops);
+          * ``os.path.dirname(...)`` nested around ``os.path.abspath(__file__)``
+            - each ``os.path.dirname(...)`` climbs one level.
+
+        Args:
+            node (ast.AST): The AST node to inspect.
+
+        Returns:
+            int or None: The number of levels above the settings file, or None
+            if the node does not derive a path from ``__file__``.
+        """
+        # Base case: __file__ resolves to the settings file itself (0 levels up).
+        if isinstance(node, ast.Name) and node.id == "__file__":
+            return 0
+
+        # Attribute access without a call, e.g. ``.parent`` on a pathlib.Path.
+        if isinstance(node, ast.Attribute):
+            inner = self._count_path_steps_from_file(node.value)
+            if inner is None:
+                return None
+            return inner + 1 if node.attr == "parent" else inner
+
+        # Calls: Path(...), X.resolve(), os.path.dirname(...), os.path.abspath(...)
+        if isinstance(node, ast.Call):
+            func = node.func
+            # Method / os.path call, e.g. Path(__file__).resolve() or
+            # os.path.dirname(...).
+            if isinstance(func, ast.Attribute):
+                if func.attr in ("resolve", "absolute"):
+                    return self._count_path_steps_from_file(func.value)
+                if func.attr == "abspath" and node.args:
+                    return self._count_path_steps_from_file(node.args[0])
+                if func.attr == "dirname" and node.args:
+                    inner = self._count_path_steps_from_file(node.args[0])
+                    return None if inner is None else inner + 1
+                return None
+            # Plain call, e.g. Path(__file__).
+            if isinstance(func, ast.Name) and func.id == "Path" and node.args:
+                return self._count_path_steps_from_file(node.args[0])
+            return None
+
+        return None
+
+    def _resolve_base_dir(self, node):
+        """
+        Resolve the value of BASE_DIR from its AST node.
+
+        Handles both a literal path (``BASE_DIR = "/path/to/project"``) and the
+        idioms that compute it relative to the settings file, e.g. the Django
+        default ``BASE_DIR = Path(__file__).resolve().parent.parent``.
+
+        Args:
+            node (ast.AST or None): The AST node assigned to BASE_DIR.
+
+        Returns:
+            str or None: The resolved directory path, or None if it cannot be
+            determined.
+        """
+        if node is None:
+            return None
+
+        # Literal path, e.g. BASE_DIR = "/path/to/project".
+        try:
+            return ast.literal_eval(node)
+        except (ValueError, TypeError, SyntaxError):
+            pass
+
+        # Path computed from this settings file, e.g. Path(__file__).parent.parent.
+        steps = self._count_path_steps_from_file(node)
+        if steps is not None:
+            base = Path(self.settings_path).resolve()
+            for _ in range(steps):
+                base = base.parent
+            return str(base)
+
+        return None
+
     def _find_installed_apps_node(self):
         """
         Find the AST node for the INSTALLED_APPS variable.
@@ -214,11 +300,9 @@ class DjangoSettingsManager:
         Returns:
             list: A list of raw string directory paths.
         """
-        # Find the BASE_DIR definition
+        # Find and resolve the BASE_DIR definition
         base_dir_node = self._find_base_dir_node()
-        base_dir = None
-        if base_dir_node is not None:
-            base_dir = ast.literal_eval(base_dir_node)
+        base_dir = self._resolve_base_dir(base_dir_node)
 
         # Find the TEMPLATES node
         templates_node = self._find_templates_node()
@@ -243,3 +327,18 @@ class DjangoSettingsManager:
                     return raw_dirs
 
         raise ValueError("DIRS key not found in TEMPLATES setting or is not a list.")
+
+    def get_templates_dir(self):
+        """
+        Retrieve the primary templates directory from TEMPLATES["DIRS"].
+
+        Returns:
+            str: The first directory configured in TEMPLATES["DIRS"].
+
+        Raises:
+            ValueError: If no template directories are configured.
+        """
+        templates_dirs = self.get_templates_dirs()
+        if not templates_dirs:
+            raise ValueError("No template directories are configured in TEMPLATES['DIRS'].")
+        return templates_dirs[0]

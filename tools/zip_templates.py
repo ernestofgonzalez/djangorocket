@@ -5,6 +5,12 @@ def zip_template(template_dir):
     """Zips the given template directory, storing directories and deflating files."""
     zip_path = f"{template_dir}.zip"
     with zipfile.ZipFile(zip_path, 'w') as zipf:
+        # The top-level template directory must be the first entry: cookiecutter
+        # treats ``namelist()[0]`` as the project root when unpacking a zip, so
+        # without it the archive is unusable (it descends into a subdirectory).
+        top_arcname = os.path.relpath(template_dir, start=os.path.dirname(template_dir))
+        zipf.write(template_dir, top_arcname, compress_type=zipfile.ZIP_STORED)
+
         for root, dirs, files in os.walk(template_dir):
             # Add directories to the zip file (stored, not compressed)
             for dir_name in dirs:

@@ -1,6 +1,7 @@
 import os
 import tempfile
 import unittest
+from pathlib import Path
 
 from djangorocket.django import DjangoSettingsManager
 
@@ -136,3 +137,84 @@ TEMPLATES = [
 
         dirs = manager.get_templates_dirs()
         self.assertEqual(dirs, [])
+
+    def test_get_templates_dirs_with_path_based_base_dir(self):
+        # Test the Django default: BASE_DIR computed from __file__ via pathlib.
+        settings_content = """
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "APP_DIRS": True,
+        "OPTIONS": {},
+    },
+]
+"""
+        manager = self._init_manager(settings_content)
+
+        base_dir = str(Path(self.temp_file.name).resolve().parent.parent)
+        self.assertEqual(
+            manager.get_templates_dirs(), [os.path.join(base_dir, "templates")]
+        )
+
+    def test_get_templates_dirs_with_os_path_dirname_base_dir(self):
+        # Test the older idiom: nested os.path.dirname around os.path.abspath.
+        settings_content = """
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "APP_DIRS": True,
+        "OPTIONS": {},
+    },
+]
+"""
+        manager = self._init_manager(settings_content)
+
+        base_dir = str(Path(self.temp_file.name).resolve().parent.parent)
+        self.assertEqual(
+            manager.get_templates_dirs(), [os.path.join(base_dir, "templates")]
+        )
+
+    def test_get_templates_dir_returns_first(self):
+        # get_templates_dir() returns the primary (first) configured directory.
+        settings_content = """
+BASE_DIR = "/path/to/project"
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "templates"), "/absolute/path"],
+        "APP_DIRS": True,
+        "OPTIONS": {},
+    },
+]
+"""
+        manager = self._init_manager(settings_content)
+
+        self.assertEqual(manager.get_templates_dir(), "/path/to/project/templates")
+
+    def test_get_templates_dir_without_dirs_raises(self):
+        # get_templates_dir() raises when no directories are configured.
+        settings_content = """
+BASE_DIR = "/path/to/project"
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {},
+    },
+]
+"""
+        manager = self._init_manager(settings_content)
+
+        with self.assertRaises(ValueError) as context:
+            manager.get_templates_dir()
+        self.assertEqual(
+            str(context.exception),
+            "No template directories are configured in TEMPLATES['DIRS'].",
+        )
