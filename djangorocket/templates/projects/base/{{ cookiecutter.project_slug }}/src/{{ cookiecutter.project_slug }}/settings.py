@@ -345,23 +345,33 @@ MIXPANEL_API_TOKEN = os.environ.get("MIXPANEL_API_TOKEN", None)
 # Django Opensearch DSL
 # https://django-opensearch-dsl.readthedocs.io/en/latest/
 
+# Build the request signer only when AWS credentials are actually available.
+# django-opensearch-dsl connects lazily (on first use), so a fresh project with
+# no AWS_* configured can still import settings, run manage.py and the test
+# suite; the signed auth is attached automatically once credentials are set.
+# Without this guard, AWSV4SignerAuth(None, ...) raises "Credentials cannot be
+# empty" at import time, breaking every management command.
+_opensearch_credentials = boto3.Session(
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+).get_credentials()
+
 OPENSEARCH_DSL = {
     "default": {
         "hosts": AWS_OPEN_SEARCH_HOST,
-        "http_auth": AWSV4SignerAuth(
-            boto3.Session(
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-            ).get_credentials(),
-            AWS_OPEN_SEARCH_REGION_NAME,
-            "es",
-        ),
         "use_ssl": True,
         "verify_certs": True,
         "connection_class": RequestsHttpConnection,
         "pool_maxsize": 20,
     },
 }
+
+if _opensearch_credentials is not None:
+    OPENSEARCH_DSL["default"]["http_auth"] = AWSV4SignerAuth(
+        _opensearch_credentials,
+        AWS_OPEN_SEARCH_REGION_NAME,
+        "es",
+    )
 
 
 # Sentry
