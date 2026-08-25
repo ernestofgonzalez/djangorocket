@@ -113,14 +113,12 @@ def test_collectstatic_succeeds(project_venv):
     assert "static files copied" in result.stdout
 
 
-@pytest.mark.xfail(
-    reason=(
-        "Boilerplate ships an out-of-sync migration: the User model's manager "
-        "change (0002_alter_user_managers) is not captured in a migration. "
-        "Remove this xfail once the template adds the missing migration."
-    ),
-    strict=False,
-)
 def test_migrations_are_in_sync(project_venv):
+    """A clean scaffold has no un-generated model changes.
+
+    The custom ``UserManager`` sets ``use_in_migrations = True`` and
+    ``0001_initial`` records it, so ``makemigrations --check`` finds nothing to
+    do -- no spurious ``0002_alter_user_managers`` on a fresh project.
+    """
     result = _manage(project_venv, "makemigrations", "--check", "--dry-run")
     assert result.returncode == 0, result.stdout

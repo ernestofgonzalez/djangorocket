@@ -74,7 +74,7 @@ def security_settings_view(request):
 
                 return redirect("{{ cookiecutter.project_slug }}-auth:security-settings")
             else:
-                form.add_error(None, "Password incorrecto.")
+                form.add_error(None, "Incorrect password.")
 
     return render(request, "auth/pages/security_settings.html", context)
 
@@ -89,19 +89,25 @@ def login_view(request):
 
     if request.method == "POST":
         if form.is_valid():
-            if user.has_usable_password():
-                user = authenticate(
-                    request,
-                    username=form.cleaned_data.get("email", None),
-                    password=form.cleaned_data.get("password", None),
+            email = form.cleaned_data.get("email", None)
+            password = form.cleaned_data.get("password", None)
+
+            user = authenticate(request, username=email, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect("index")
+
+            # authenticate() fails for accounts registered via Google (they have
+            # an unusable password); point them at Sign In with Google instead of
+            # the generic "wrong credentials" message.
+            existing_user = get_user_model().objects.filter(email=email).first()
+            if existing_user is not None and not existing_user.has_usable_password():
+                form.add_error(
+                    None,
+                    "You registered using your Google Account. Please use Sign In with Google to sign in.",
                 )
-                if user is not None:
-                    login(request, user)
-                    return redirect("index")
-                else:
-                    form.add_error(None, "Incorrect email address or password.")
             else:
-                form.add_error(None, "You registered using your Google Account. Please use Sign In with Google to sign in.")
+                form.add_error(None, "Incorrect email address or password.")
 
     return render(request, "auth/pages/login.html", context)
 
@@ -132,7 +138,7 @@ def register_view(request):
                 return redirect("index")
             except IntegrityError as e:
                 form.add_error(
-                    None, "Este correo electrónico ya está asociado a una cuenta."
+                    None, "This email address is already associated with an account."
                 )
 
     return render(request, "auth/pages/register.html", context)

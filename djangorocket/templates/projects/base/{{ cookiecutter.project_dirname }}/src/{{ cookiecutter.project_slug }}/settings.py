@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 from pathlib import Path
 
 import boto3
@@ -11,6 +12,12 @@ from opensearchpy import AWSV4SignerAuth, RequestsHttpConnection
 
 # Load environment variables from .env file
 load_dotenv(verbose=True)
+
+# True while the test suite runs (``manage.py test`` or pytest). Used below to
+# skip machinery that requires a build step -- the hashed staticfiles manifest
+# and offline-compressed assets -- which tests don't produce (no collectstatic),
+# so the suite runs green from a clean scaffold regardless of DEBUG.
+TESTING = "test" in sys.argv or "pytest" in sys.modules
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -106,6 +113,14 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "{{ cookiecutter.project_slug }}.context_processors.google_oauth_client_id",
                 "{{ cookiecutter.project_slug }}.context_processors.stripe_publishable_key",
+            ],
+            # Make the project's utility filters (e.g. ``div``) available in every
+            # template without an explicit load tag. This also lets
+            # django-compressor's offline parser resolve them -- otherwise it
+            # reports "Invalid filter: 'div'" and skips billing_settings.html.
+            "builtins": [
+                "{{ cookiecutter.project_slug }}.utils.templatetags.{{ cookiecutter.project_slug }}_utils_math",
+                "{{ cookiecutter.project_slug }}.utils.templatetags.{{ cookiecutter.project_slug }}_utils_timestamp",
             ],
         },
     },
@@ -231,7 +246,7 @@ CELERY_BEAT_SCHEDULE = {}
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-if DEBUG is True:
+if DEBUG is True or TESTING:
     STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
@@ -248,6 +263,11 @@ if DEBUG is True:
     COMPRESS_ROOT = os.path.join(BASE_DIR, "static")
 COMPRESS_ENABLED = not DEBUG
 COMPRESS_OFFLINE = True
+if TESTING:
+    # Tests render templates without the offline-compressed assets, so serve
+    # the raw compressor blocks inline instead of looking them up in a manifest.
+    COMPRESS_ENABLED = False
+    COMPRESS_OFFLINE = False
 
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",

@@ -45,7 +45,7 @@ class LoginViewTests(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertContains(
             response,
-            "Este correo electrónico es inválido. Asegúrate de que tenga un formato como este: ana@ejemplo.com",
+            "Enter a valid email address.",
             html=True,
         )
 
@@ -58,7 +58,7 @@ class LoginViewTests(TestCase):
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertContains(
-            response, "Es necesario que indiques tu password.", html=True
+            response, "You need to enter your password.", html=True
         )
 
     def test_post_success_authenticates_request_user(self):
@@ -87,7 +87,7 @@ class LoginViewTests(TestCase):
             response,
             reverse("index"),
             status_code=HTTPStatus.FOUND,
-            target_status_code=HTTPStatus.FOUND,
+            target_status_code=HTTPStatus.OK,
             fetch_redirect_response=True,
         )
 

@@ -8,6 +8,10 @@ from {{cookiecutter.project_slug}}.utils import default_uuid
 
 
 class UserManager(BaseUserManager):
+    # Serialize this manager into migrations (like Django's own auth UserManager)
+    # so ``0001_initial`` records it and ``makemigrations --check`` stays clean.
+    use_in_migrations = True
+
     def create_user(self, email, password=None, name=None, **extra_fields):
         if not email:
             raise ValueError('Enter an email address')

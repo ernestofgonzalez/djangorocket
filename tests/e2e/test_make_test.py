@@ -74,17 +74,14 @@ def test_make_test_discovers_and_runs_suite(project_venv):
     assert ran - failures - errors > 0, result.stdout
 
 
-@pytest.mark.xfail(
-    reason=(
-        "The bundled suite is not fully green from a clean bake: templates need "
-        "collectstatic/compress artifacts (Missing staticfiles manifest entry), "
-        "the register view calls Stripe without a key, and billing_settings.html "
-        "uses a |div filter django-compressor rejects. Remove this xfail once "
-        "`make test` runs the template's tests green."
-    ),
-    strict=False,
-)
 def test_make_test_is_green(project_venv):
+    """``make test`` runs the bundled suite fully green from a clean bake.
+
+    Settings detect the test run and skip the machinery that needs a build step
+    (the hashed staticfiles manifest and offline-compressed assets), and the
+    register view no longer calls Stripe when no key is configured, so a fresh
+    scaffold's tests pass without any manual setup.
+    """
     result = _run_make_test(project_venv)
     _found, _ran, failures, errors = _counts(result.stdout)
     assert result.returncode == 0 and failures == 0 and errors == 0, result.stdout

@@ -43,10 +43,6 @@ class RegisterViewTests(TestCase):
         self.assertTrue(password_field.required)
         self.assertFalse(password_field.disabled)
 
-        country_field = form.fields["country"]
-        self.assertTrue(country_field.required)
-        self.assertFalse(country_field.disabled)
-
         terms_field = form.fields["terms"]
         self.assertTrue(terms_field.required)
         self.assertFalse(terms_field.disabled)
@@ -57,7 +53,6 @@ class RegisterViewTests(TestCase):
             "name": "Marie C",
             "email": "marie@example",
             "password": "safsdf678hg",
-            "country": "ES",
             "terms": "on",
         }
         response = self.client.post(url, data=data, follow=True)
@@ -65,7 +60,7 @@ class RegisterViewTests(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertContains(
             response,
-            "Este correo electrónico es inválido. Asegúrate de que tenga un formato como este: ana@ejemplo.com",
+            "Enter a valid email address.",
             html=True,
         )
 
@@ -74,27 +69,25 @@ class RegisterViewTests(TestCase):
         data = {
             "email": "john@example.com",
             "password": "fdsjgkhdfgs",
-            "country": "ES",
             "terms": "on",
         }
         response = self.client.post(url, data=data, follow=True)
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertContains(response, "Es necesario que indiques tu nombre.", html=True)
+        self.assertContains(response, "You need to enter your name.", html=True)
 
     def test_post_missing_password_displays_error_message(self):
         url = reverse("{{ cookiecutter.project_slug }}-auth:register")
         data = {
             "name": "John Smith",
             "email": "john@example.com",
-            "country": "ES",
             "terms": "on",
         }
         response = self.client.post(url, data=data, follow=True)
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertContains(
-            response, "Es necesario que indiques tu password.", html=True
+            response, "You need to enter a password.", html=True
         )
 
     def test_post_password_with_less_than_8_characters_displays_error_message(self):
@@ -103,14 +96,13 @@ class RegisterViewTests(TestCase):
             "name": "Ernesto González",
             "email": "ernesto@example.com",
             "password": "shd72!s",
-            "country": "ES",
             "terms": "on",
         }
         response = self.client.post(url, data=data, follow=True)
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertContains(
-            response, "Tu password debe tener al menos 8 caracteres.", html=True
+            response, "Your password must have at least 8 characters.", html=True
         )
 
     def test_post_terms_off_displays_error_message(self):
@@ -119,14 +111,13 @@ class RegisterViewTests(TestCase):
             "name": "John Doe",
             "email": "john@example.com",
             "password": "shd72!s",
-            "country": "ES",
         }
         response = self.client.post(url, data=data, follow=True)
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertContains(
             response,
-            "Debes aceptar los términos y condiciones para poder empezar.",
+            "You need to accept the Terms and Conditions.",
             html=True,
         )
 
@@ -136,7 +127,6 @@ class RegisterViewTests(TestCase):
             "name": "John Doe",
             "email": "john@example.com",
             "password": "fdg7dsg8sdfg78",
-            "country": "ES",
             "terms": "on",
         }
         self.client.post(url, data=data, follow=True)
@@ -149,7 +139,6 @@ class RegisterViewTests(TestCase):
             "name": "John Doe",
             "email": "john@example.com",
             "password": "fdg7dsg8sdfg78",
-            "country": "ES",
             "terms": "on",
         }
         response = self.client.post(url, data=data, follow=False)
@@ -158,7 +147,7 @@ class RegisterViewTests(TestCase):
             response,
             reverse("index"),
             status_code=HTTPStatus.FOUND,
-            target_status_code=HTTPStatus.FOUND,
+            target_status_code=HTTPStatus.OK,
             fetch_redirect_response=True,
         )
 

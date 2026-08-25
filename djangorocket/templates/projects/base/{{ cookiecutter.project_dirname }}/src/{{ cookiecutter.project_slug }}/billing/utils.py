@@ -4,6 +4,12 @@ from {{cookiecutter.project_slug}}.model_loaders import get_stripe_customer_mode
 
 
 def create_subscription_for_user(user, trial_period_days):
+    # A freshly scaffolded project ships without Stripe credentials, so skip
+    # subscription creation until they are configured -- this lets sign-up work
+    # out of the box. Set STRIPE_SECRET_KEY (and STRIPE_PRICE_ID) to enable it.
+    if not settings.STRIPE_SECRET_KEY:
+        return
+
     stripe.api_key = settings.STRIPE_SECRET_KEY
 
     customer = stripe.Customer.create(
