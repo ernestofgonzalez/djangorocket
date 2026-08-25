@@ -1,0 +1,49 @@
+# Namespacing everything under this project keeps multiple DjangoRocket projects
+# from clashing on the same host: containers, networks and the named volumes
+# below are all prefixed with it. `djangorocket init` picks a name that is free
+# on disk and in `docker volume ls`, appending -1, -2, ... if needed.
+name: {{ cookiecutter.project_dirname }}
+
+services:
+
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    # Host port comes from .env (POSTGRES_PORT), chosen free at `init` time, so
+    # multiple projects can publish Postgres side by side. Container port is fixed.
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # Lets `docker compose up --wait` (used by `make setupdb`/`make bootstrap`)
+    # block until Postgres actually accepts connections, so `migrate` doesn't
+    # race the container's startup.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: bitnami/redis:latest
+    restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - redis_data:/bitnami/redis/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
+    name: {{ cookiecutter.project_dirname }}_postgres_data
+  redis_data:
+    name: {{ cookiecutter.project_dirname }}_redis_data

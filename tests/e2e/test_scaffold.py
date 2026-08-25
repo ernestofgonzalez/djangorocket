@@ -40,8 +40,9 @@ def _iter_text_files(root: Path):
 
 def test_bake_succeeds(baked_project):
     assert baked_project.is_dir()
-    # Default cookiecutter.json project_name "My Project" -> slug "my_project".
-    assert baked_project.name == "my_project"
+    # "My Project" -> kebab directory "my-project"; the Python package inside
+    # stays snake_case (src/my_project).
+    assert baked_project.name == "my-project"
 
 
 @pytest.mark.parametrize("relative_path", EXPECTED_FILES)
@@ -73,7 +74,7 @@ def test_settings_reference_rendered_slug(baked_project):
 
 
 def test_project_name_drives_slug(tmp_path):
-    """A custom project name is slugified into the package/directory name."""
+    """A custom project name drives both the kebab dir and the snake package."""
     project = bake(tmp_path, extra_context={"project_name": "Cool SaaS App"})
-    assert project.name == "cool_saas_app"
+    assert project.name == "cool-saas-app"
     assert (project / "src/cool_saas_app/settings.py").is_file()
