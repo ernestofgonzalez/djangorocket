@@ -33,7 +33,7 @@ class CustomBuildCommand(build_py):
 
 
 setup(
-    name="djangorocket",
+    name="djrocket",
     description="CLI tool to add applications and UI templates to any Django website.",
     long_description=get_long_description(),
     long_description_content_type="text/markdown",

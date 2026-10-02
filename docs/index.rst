@@ -47,7 +47,11 @@ You'll be prompted to enter some information
    project_name [My Project]: 
    project_slug [my_project]:
 
-Django Rocket is also available as a CLI tool
+Django Rocket is also available as a CLI tool, published to PyPI as ``djrocket``
+
+.. code-block:: sh
+
+   pip install djrocket
 
 .. code-block:: sh
 

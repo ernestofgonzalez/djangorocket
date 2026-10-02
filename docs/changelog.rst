@@ -9,6 +9,7 @@ Changelog
 1.0.0a2 (2026-10-02)
 --------------------
 
+* Published the CLI to PyPI as ``djrocket`` -- ``pip install djrocket`` installs the ``djangorocket`` command
 * Added ``djangorocket add`` to install a UI template into an existing project, resolving each component by name and refusing an unknown one
 * Added one-command onboarding to generated projects: ``make bootstrap`` creates the virtualenv, installs dependencies, starts Postgres and Redis, and applies migrations
 * Added a README to generated projects, covering the project layout, every ``make`` target, the Tailwind workflow and what to set when deploying

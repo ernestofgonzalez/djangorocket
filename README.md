@@ -23,8 +23,10 @@ For detailed information on usage and third-party integrations, please refer to 
 Install the CLI with [pip](https://github.com/pypa/pip):
 
 ```bash
-$ pip install djangorocket
+$ pip install djrocket
 ```
+
+> **_NOTE:_** The package is published as `djrocket`; the command it installs is `djangorocket`.
 
 Generating and running a project needs:
 
