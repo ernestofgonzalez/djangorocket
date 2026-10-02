@@ -1,11 +1,22 @@
 name: Tests
 
+# Push is limited to the trunk on purpose. Listing a branch here that is also the
+# head of an open pull request runs everything twice -- once for the push, once
+# for the PR's synchronize -- so development branches are covered by
+# `pull_request` alone, which additionally tests the result of the merge rather
+# than the branch tip.
 on:
   push:
     branches:
       - main
-      - 1.x
   pull_request:
+
+# One run per PR (or per branch); a new commit supersedes the run still going for
+# the previous one. Never cancel on the trunk, so every commit on main keeps a
+# result of its own.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   unit:
