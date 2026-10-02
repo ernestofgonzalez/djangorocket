@@ -4,7 +4,7 @@ import subprocess
 import os
 import io
 
-VERSION = "1.0.0a1"
+VERSION = "1.0.0a2"
 
 
 def get_long_description():
@@ -40,7 +40,9 @@ setup(
     author="Ernesto González",
     version=VERSION,
     license="Apache License, Version 2.0",
-    packages=find_packages(),
+    # Without the exclude, the repo's own test suite installs as a top-level
+    # ``tests`` package in the user's site-packages.
+    packages=find_packages(exclude=["tests", "tests.*"]),
     include_package_data=True,
     install_requires=[
         "click",
@@ -68,6 +70,7 @@ setup(
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14",
         "Framework :: Django :: 5.0",
         "Framework :: Django :: 5.1",
         "Framework :: Django :: 5.2",
