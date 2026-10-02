@@ -105,3 +105,30 @@ def test_add_accordion_discovers_templates_dir_from_settings(baked_project, acco
 
     rendered = baked_project / "src" / "templates" / "accordion" / "accordion.html"
     assert rendered.is_file(), result.stdout
+
+
+def test_add_unknown_component_reports_error(tmp_path, accordion_zip):
+    """An unrecognised name must be refused, not silently resolved to another
+    template. ``add`` used to hardcode ``accordion.zip``, so ``add navbar``
+    cheerfully installed an accordion."""
+    result = _run_add("navbar", "--templates-dir", str(tmp_path), cwd=tmp_path)
+
+    assert "unknown component 'navbar'" in result.stdout, result.stdout
+    # The error names what the install actually offers, so the user can recover.
+    assert "accordion" in result.stdout, result.stdout
+    # Nothing was written: no stray template landed in the templates dir.
+    assert not (tmp_path / "accordion").exists(), result.stdout
+    assert list(tmp_path.iterdir()) == [], list(tmp_path.iterdir())
+
+
+def test_add_renders_each_requested_component(tmp_path, accordion_zip):
+    """Every name in the argument list is resolved on its own.
+
+    The old loop ignored ``component_name``, so the number of rendered templates
+    was driven by the argument *count* rather than the arguments themselves.
+    """
+    result = _run_add("accordion", "nope", "--templates-dir", str(tmp_path), cwd=tmp_path)
+
+    # The first component rendered before the unknown one aborted the run.
+    assert (tmp_path / "accordion" / "accordion.html").is_file(), result.stdout
+    assert "unknown component 'nope'" in result.stdout, result.stdout
