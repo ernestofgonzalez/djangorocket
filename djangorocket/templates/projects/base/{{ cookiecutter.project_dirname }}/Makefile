@@ -39,14 +39,16 @@ bootstrap:
 	@echo "${LIGHT_CYAN}Done. Start the server with: make runserver${NO_COLOR}"
 
 # Start the Postgres service in the background, waiting until it is healthy.
+# On failure `--wait` only prints "container is unhealthy", so dump the service's
+# own logs before bailing out: that is where the real error is.
 setupdb:
 	@echo "${LIGHT_CYAN}Starting Postgres...${NO_COLOR}"
-	docker compose up -d --wait postgres
+	docker compose up -d --wait postgres || { docker compose logs postgres; exit 1; }
 
 # Start the Redis service in the background, waiting until it is healthy.
 setupredis:
 	@echo "${LIGHT_CYAN}Starting Redis...${NO_COLOR}"
-	docker compose up -d --wait redis
+	docker compose up -d --wait redis || { docker compose logs redis; exit 1; }
 
 # Run the Django development server.
 runserver:

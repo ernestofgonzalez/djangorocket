@@ -9,15 +9,19 @@ locally without any manual setup.
 Kept dependency-free on purpose: ``djangorocket`` only depends on ``click`` and
 ``cookiecutter``, so this hook must not import Django -- it may not be installed
 in the environment running ``init``. SECRET_KEY generation therefore mirrors
-Django's ``get_random_secret_key`` (50 characters from the same alphabet)
-instead of calling it.
+Django's ``get_random_secret_key`` (50 characters from the same alphabet, minus
+``$``) instead of calling it.
 """
 
 import secrets
 from uuid import uuid4
 
-# Same alphabet and length as django.core.management.utils.get_random_secret_key.
-SECRET_KEY_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
+# Same alphabet and length as django.core.management.utils.get_random_secret_key,
+# except for "$": docker-compose reads this .env too (for POSTGRES_*/REDIS_PORT)
+# and expands "$NAME" in any value, so a "$" in the key makes every compose
+# command warn about undefined variables. Dropping one character out of fifty
+# leaves the key's entropy far above what Django needs.
+SECRET_KEY_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789!@#%^&*(-_=+)"
 
 # Host ports chosen by ``djangorocket init`` (free on this machine, distinct from
 # any sibling project) and rendered in by cookiecutter. docker-compose publishes
