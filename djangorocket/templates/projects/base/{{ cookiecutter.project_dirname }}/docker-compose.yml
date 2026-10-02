@@ -1,0 +1,57 @@
+# Namespacing everything under this project keeps multiple DjangoRocket projects
+# from clashing on the same host: containers, networks and the named volumes
+# below are all prefixed with it. `djangorocket init` picks a name that is free
+# on disk and in `docker volume ls`, appending -1, -2, ... if needed.
+name: {{ cookiecutter.project_dirname }}
+
+services:
+
+  postgres:
+    # Pinned to a major version on purpose. With `:latest` a new Postgres major
+    # silently lands in generated projects, and major bumps are not drop-in:
+    # 18 moved the data directory (see the volume below), so `:latest` broke
+    # `make setupdb` the day 18 shipped. Bump this deliberately instead.
+    image: postgres:18
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    # Host port comes from .env (POSTGRES_PORT), chosen free at `init` time, so
+    # multiple projects can publish Postgres side by side. Container port is fixed.
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    # Mounted at /var/lib/postgresql, not /var/lib/postgresql/data: since 18 the
+    # image keeps its data in a major-version subdirectory (/var/lib/postgresql/18/docker)
+    # so that `pg_upgrade --link` works, and it refuses to start if it finds a
+    # volume on the old path.
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    # Lets `docker compose up --wait` (used by `make setupdb`/`make bootstrap`)
+    # block until Postgres actually accepts connections, so `migrate` doesn't
+    # race the container's startup.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    # The official image rather than bitnami/redis, which only publishes
+    # `:latest` on Docker Hub now and so cannot be pinned to a major.
+    image: redis:8-alpine
+    restart: always
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
+    name: {{ cookiecutter.project_dirname }}_postgres_data
+  redis_data:
+    name: {{ cookiecutter.project_dirname }}_redis_data

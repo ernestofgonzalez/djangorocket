@@ -4,6 +4,28 @@
 Changelog
 =========
 
+.. _v_1_0_0a2:
+
+1.0.0a2 (2026-10-02)
+--------------------
+
+* Published the CLI to PyPI as ``djrocket`` -- ``pip install djrocket`` installs the ``djangorocket`` command
+* Added ``djangorocket add`` to install a UI template into an existing project, resolving each component by name and refusing an unknown one
+* Added one-command onboarding to generated projects: ``make bootstrap`` creates the virtualenv, installs dependencies, starts Postgres and Redis, and applies migrations
+* Added a README to generated projects, covering the project layout, every ``make`` target, the Tailwind workflow and what to set when deploying
+* Added an end-to-end test suite that bakes a project, boots it and renders its landing page
+* Changed the templates to ship as package data, so ``init`` and ``add`` work from a ``pip`` install
+* Changed ``init`` to pick a project directory and host ports that are free, so several generated projects can run on one machine
+* Changed ``init`` to run the post-generation hook, so a generated project gets a pre-populated ``.env`` and boots with no further configuration
+* Changed ``init`` to report the new project's absolute path instead of a ``cd`` hint
+* Upgraded generated projects to Django 5.2.17 and added support for Python 3.10 to 3.14
+* Pinned the services a generated project boots to ``postgres:18`` and ``redis:8-alpine``
+* Fixed every page of a generated project returning a 500 on Python 3.14
+* Fixed the compiled Tailwind stylesheet being excluded from generated projects by the template's ``.gitignore``
+* Fixed a ``pkg_resources`` crash in generated projects on Python 3.12 and later
+* Fixed ``make test`` discovering no tests in a generated project, and made the bundled suite pass from a clean scaffold
+* Fixed ``psycopg2`` failing to build on modern CPython, by pinning 2.9.10
+
 .. _v_1_0_0a1:
 
 1.0.0a1 (2025-04-05)

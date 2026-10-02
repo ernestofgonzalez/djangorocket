@@ -34,13 +34,16 @@ After you generate your project, the initial project structure is
    │  ├── tailwind_theme
    │  ├── templates
    │  └── manage.py    
+   ├── .coveragerc
    ├── .env
    ├── .env.example
    ├── .flake8
+   ├── .gitignore
    ├── .isort.cfg
    ├── docker-compose.yml
    ├── Makefile
    ├── pyproject.toml
    ├── pytest.ini
+   ├── README.md
    ├── requiremens.txt
    └── runtime.txt

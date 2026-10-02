@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+.python-version
+
+# Virtualenvs
+# `make bootstrap` creates .venv; env/ and venv/ are the other names .coveragerc
+# already expects to skip.
+.venv/
+env/
+venv/
+
+# Secrets
+# `djangorocket init` seeds .env with a real SECRET_KEY and database credentials,
+# so it must stay local. .env.example is the committed template.
+.env
+.env.local
+*.pem
+
+# Django
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+# STATIC_ROOT and COMPRESS_ROOT: output of `collectstatic` and `compress`.
+/src/staticfiles/
+
+# Celery
+celerybeat-schedule
+*.pid
+
+# Tests, coverage and profiling
+# `make coverage` writes the report, the XML and the genbadge SVG; .coveragerc
+# sets parallel=True, hence the per-process .coverage.* shards.
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+coverage.svg
+htmlcov/
+pyinstrument_profiles/
+
+# Node
+# Tailwind's toolchain, installed by `manage.py tailwind install`. The compiled
+# stylesheet it emits under src/tailwind_theme/static/ is committed on purpose.
+node_modules/
+
+# Sphinx
+docs/_build/
+
+# Logs
+*.log
+logs/
+
+# macOS
+.DS_Store

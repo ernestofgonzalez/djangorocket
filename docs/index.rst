@@ -26,7 +26,7 @@ You can install them via `pip`_
 
 .. code-block:: sh
 
-   pip install cookiecutter==2.1.1 django==5.0.6
+   pip install cookiecutter==2.1.1 django==5.2.17
 
 .. note::
    Django Rocket works with other versions of Cookiecutter and Django, but it lacks extensive test coverage so there may be small errors. For now it's better to stick to the mentioned versions.
@@ -38,7 +38,7 @@ To build your project with cookiecutter
 
 .. code-block:: sh 
 
-   cookiecutter gh:ErnestoFGonzalez/djangorocket --directory="templates/projects/base"
+   cookiecutter gh:ErnestoFGonzalez/djangorocket --directory="djangorocket/templates/projects/base"
 
 You'll be prompted to enter some information
 
@@ -47,7 +47,11 @@ You'll be prompted to enter some information
    project_name [My Project]: 
    project_slug [my_project]:
 
-Django Rocket is also available as a CLI tool
+Django Rocket is also available as a CLI tool, published to PyPI as ``djrocket``
+
+.. code-block:: sh
+
+   pip install djrocket
 
 .. code-block:: sh
 

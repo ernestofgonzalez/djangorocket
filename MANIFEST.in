@@ -1,0 +1,5 @@
+recursive-include djangorocket/templates *
+
+# setup.py's build_py runs this script to zip each template, so the wheel cannot
+# be built from the sdist without it.
+include tools/zip_templates.py

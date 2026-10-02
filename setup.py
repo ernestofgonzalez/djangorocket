@@ -1,8 +1,10 @@
 from setuptools import setup, find_packages
-import io
+from setuptools.command.build_py import build_py
+import subprocess
 import os
+import io
 
-VERSION = "1.0.0a1"
+VERSION = "1.0.0a2"
 
 
 def get_long_description():
@@ -13,15 +15,35 @@ def get_long_description():
         return fp.read()
 
 
+class CustomBuildCommand(build_py):
+    """Custom build command to zip templates before building the package."""
+
+    def run(self):
+        # Run the zip_templates.py script
+        script_path = os.path.join(os.path.dirname(__file__), "tools", "zip_templates.py")
+        if os.path.exists(script_path):
+            print("Running zip_templates.py to zip all templates...")
+            subprocess.check_call(["python", script_path])
+        else:
+            print(f"Error: Script not found at {script_path}")
+            raise FileNotFoundError(f"Script not found: {script_path}")
+        
+        # Continue with the standard build process
+        super().run()
+
+
 setup(
-    name="djangorocket",
+    name="djrocket",
     description="CLI tool to add applications and UI templates to any Django website.",
     long_description=get_long_description(),
     long_description_content_type="text/markdown",
     author="Ernesto González",
     version=VERSION,
     license="Apache License, Version 2.0",
-    packages=find_packages(exclude=["templates"]),
+    # Without the exclude, the repo's own test suite installs as a top-level
+    # ``tests`` package in the user's site-packages.
+    packages=find_packages(exclude=["tests", "tests.*"]),
+    include_package_data=True,
     install_requires=[
         "click",
         "click-default-group>=1.2.3",
@@ -44,13 +66,16 @@ setup(
     classifiers=[
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Libraries",
-        "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14",
         "Framework :: Django :: 5.0",
         "Framework :: Django :: 5.1",
         "Framework :: Django :: 5.2",
     ],
+    cmdclass={
+        "build_py": CustomBuildCommand,
+    },
 )
