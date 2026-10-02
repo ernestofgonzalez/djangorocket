@@ -9,7 +9,11 @@ include .env
 export
 endif
 
-.PHONY: docs test test-e2e playground
+.PHONY: docs test test-e2e playground linttemplates formattemplates
+
+# The Django templates shipped by the base project template. Quoted everywhere
+# it is used: the directory name contains both spaces and braces.
+TEMPLATES_DIR := djangorocket/templates/projects/base/{{ cookiecutter.project_dirname }}/src
 
 help:
 	@echo "test - run tests (fast; e2e tests are skipped)"
@@ -57,9 +61,9 @@ format:
 # Lint templates code
 linttemplates:
 	@echo "${LIGHT_CYAN}Linting Django HTML code...${NO_COLOR}"
-	djlint "{{ cookiecutter.project_slug }}/src/" --extension=html --lint
+	djlint "$(TEMPLATES_DIR)" --extension=html --lint
 
 # Format templates code
 formattemplates:
-	@echo "${LIGHT_CYAN}Linting Django HTML code...${NO_COLOR}"
-	djlint "{{ cookiecutter.project_slug }}/src/" --extension=html --reformat
+	@echo "${LIGHT_CYAN}Formatting Django HTML code...${NO_COLOR}"
+	djlint "$(TEMPLATES_DIR)" --extension=html --reformat
