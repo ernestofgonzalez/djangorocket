@@ -4,6 +4,8 @@ These only need cookiecutter (a core dependency), so they run as part of the
 normal ``pytest`` invocation and give quick feedback that the template renders.
 """
 
+import shutil
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -11,6 +13,9 @@ import pytest
 from .conftest import bake
 
 # Files that every generated project must contain, relative to the project root.
+# The dotfiles are listed deliberately: they are easy to lose from a built
+# package (a MANIFEST.in tweak, a different build backend) without anything else
+# in the scaffold changing.
 EXPECTED_FILES = [
     "src/manage.py",
     "src/my_project/settings.py",
@@ -19,12 +24,59 @@ EXPECTED_FILES = [
     "src/my_project/asgi.py",
     "requirements/requirements.txt",
     "requirements/requirements-testing.txt",
+    # The compiled Tailwind stylesheet `{% tailwind_css %}` resolves to. It ships
+    # prebuilt so onboarding needs no Node; without it a project renders unstyled
+    # and raises on the staticfiles manifest lookup once DEBUG is off.
+    "src/tailwind_theme/static/css/dist/styles.css",
     "Makefile",
     "README.md",
     "pytest.ini",
     "pyproject.toml",
     "docker-compose.yml",
+    ".coveragerc",
     ".env.example",
+    ".flake8",
+    ".gitignore",
+    ".isort.cfg",
+]
+
+# Local artifacts a generated project produces -- the virtualenv `make bootstrap`
+# creates, the coverage output `make coverage` writes, and the `.env` the post-gen
+# hook seeds with a real SECRET_KEY -- none of which may reach a commit.
+GITIGNORED_PATHS = [
+    ".env",
+    ".venv/",
+    "__pycache__/",
+    "db.sqlite3",
+    "src/staticfiles/",
+    "src/tailwind_theme/static_src/node_modules/",
+    ".coverage",
+    "coverage.xml",
+    "coverage.svg",
+    "htmlcov/",
+    ".DS_Store",
+]
+
+# The mirror image: paths the scaffold ships, or that a project would plausibly
+# add, which the `.gitignore` must NOT swallow. The compiled Tailwind stylesheet
+# is the cautionary case -- a bare `dist` pattern inherited from JS boilerplate
+# once hid it, so `git init && git add .` yielded a project with no CSS. The
+# module names below are the other half of that problem: generic Python-packaging
+# boilerplate (`lib/`, `var/`, `build/`, `target/` ...) shadows ordinary app
+# directories in a project that never builds an sdist.
+GITIGNORE_TRACKED_PATHS = [
+    "src/tailwind_theme/static/css/dist/styles.css",
+    "src/tailwind_theme/static_src/package-lock.json",
+    "src/static/CACHE/manifest.json",
+    ".env.example",
+    "README.md",
+    "lib/models.py",
+    "var/models.py",
+    "build/models.py",
+    "dist/models.py",
+    "out/models.py",
+    "target/models.py",
+    "coverage/models.py",
 ]
 
 
@@ -78,3 +130,42 @@ def test_project_name_drives_slug(tmp_path):
     project = bake(tmp_path, extra_context={"project_name": "Cool SaaS App"})
     assert project.name == "cool-saas-app"
     assert (project / "src/cool_saas_app/settings.py").is_file()
+
+
+@pytest.fixture
+def git_project(tmp_path):
+    """A freshly baked project with a git repo initialised in its root.
+
+    Its own bake rather than the session fixture's, because this inits a repo in
+    the project root and nothing else should inherit that.
+    """
+    if shutil.which("git") is None:
+        pytest.skip("needs git to check the generated .gitignore")
+    project = bake(tmp_path)
+    subprocess.run(["git", "init", "-q"], cwd=project, check=True)
+    return project
+
+
+def _is_ignored(project, path):
+    """Whether git would ignore ``path`` inside ``project``."""
+    result = subprocess.run(["git", "check-ignore", "-q", path], cwd=project)
+    return result.returncode == 0
+
+
+def test_gitignore_covers_local_artifacts(git_project):
+    """The shipped ``.gitignore`` keeps generated secrets and build output out of git.
+
+    Asserted through ``git check-ignore`` rather than by grepping the file, so
+    what is pinned is the behaviour a user gets after ``git init``, not the exact
+    wording of the patterns.
+    """
+    missed = [path for path in GITIGNORED_PATHS if not _is_ignored(git_project, path)]
+    assert not missed, f"not ignored by the generated .gitignore: {missed}"
+
+
+def test_gitignore_does_not_hide_project_files(git_project):
+    """...and does not hide the project's own source along the way."""
+    swallowed = [
+        path for path in GITIGNORE_TRACKED_PATHS if _is_ignored(git_project, path)
+    ]
+    assert not swallowed, f"wrongly ignored by the generated .gitignore: {swallowed}"
