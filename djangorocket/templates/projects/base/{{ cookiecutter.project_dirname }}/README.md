@@ -5,7 +5,7 @@ authentication, Stripe subscriptions, a Tailwind frontend and a REST API already
 
 ## Requirements
 
-- **Python 3.10** — the version pinned in `runtime.txt`
+- **Python 3.10 - 3.14** — `make bootstrap` builds the virtualenv with whatever `python3` is on your `PATH`. `runtime.txt` pins the version used when deploying.
 - **Docker** — runs the Postgres and Redis services defined in `docker-compose.yml`
 
 ## Getting started

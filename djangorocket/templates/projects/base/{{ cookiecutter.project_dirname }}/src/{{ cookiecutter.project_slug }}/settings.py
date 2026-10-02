@@ -128,10 +128,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "{{ cookiecutter.project_slug }}.wsgi.application"
 
-CORS_ORIGIN_ALLOW_ALL = False
-if os.environ.get("CORS_ORIGIN_ALLOW_ALL", "False") == "True":
-    CORS_ORIGIN_ALLOW_ALL = True
-CORS_ORIGIN_WHITELIST = json.loads(os.environ.get("CORS_ORIGIN_WHITELIST"))
+# django-cors-headers 4.0 removed the CORS_ORIGIN_* aliases these used to be
+# called. The old names are not errors, just ignored, so a stale .env would
+# silently stop allowing its configured origins -- hence the env keys are named
+# after the settings they feed.
+CORS_ALLOW_ALL_ORIGINS = False
+if os.environ.get("CORS_ALLOW_ALL_ORIGINS", "False") == "True":
+    CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = json.loads(os.environ.get("CORS_ALLOWED_ORIGINS"))
 
 
 # Django Rest Framework

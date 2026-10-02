@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -41,13 +41,23 @@ jobs:
         run: pytest
 
   e2e:
-    name: End-to-end (bake + boot generated project)
+    name: End-to-end (generated project on py${{ matrix.python-version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      # Both ends of the Python range a generated project supports. The top end
+      # matters as much as the floor: `make bootstrap` builds the project's
+      # virtualenv with whatever `python3` the developer happens to have, and
+      # Python 3.14 broke Django 5.0's template context copy -- every page of a
+      # fresh project 500ed while this job, pinned to 3.10, stayed green.
+      matrix:
+        python-version: ["3.10", "3.14"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
+        id: setup-python
         with:
-          python-version: "3.10"
+          python-version: ${{ matrix.python-version }}
           cache: pip
       - name: Install system build dependencies
         # psycopg2 (a generated-project dependency) compiles against libpq.
@@ -58,4 +68,8 @@ jobs:
           pip install -e .
           pip install -r requirements/requirements-testing.txt
       - name: Run end-to-end tests
+        # Build the generated project's virtualenv with this job's interpreter
+        # rather than letting the suite pick the newest one on the runner.
+        env:
+          DJANGOROCKET_E2E_PYTHON: ${{ steps.setup-python.outputs.python-path }}
         run: pytest --run-e2e -m e2e -v

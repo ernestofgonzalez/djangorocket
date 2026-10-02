@@ -30,7 +30,7 @@ GENERATED_PROJECT_ENV = {
     "SECRET_KEY": "e2e-insecure-test-key",
     "DEBUG": "False",
     "ALLOWED_HOSTS": '["*"]',
-    "CORS_ORIGIN_WHITELIST": "[]",
+    "CORS_ALLOWED_ORIGINS": "[]",
     "INTERNAL_IPS": "[]",
     "DATABASE_URL": "sqlite:///e2e.sqlite3",
     "SECURE_SSL_REDIRECT": "False",
@@ -79,24 +79,43 @@ def baked_project(tmp_path_factory):
     return bake(output_dir)
 
 
+# The Python range a generated project supports: its ``runtime.txt`` floor up to
+# the newest release its pins handle. Newest first -- see ``_builder_python``.
+SUPPORTED_PYTHONS = ("3.14", "3.13", "3.12", "3.11", "3.10")
+
+
 def _builder_python():
     """Pick an interpreter to install the generated project's deps into.
 
-    The generated project targets Python 3.10 (see its ``runtime.txt``) and pins
-    2022-era dependencies (Django 5.0, etc.), so prefer a 3.10/3.11 interpreter
-    on PATH to match what the scaffold actually supports, then fall back to the
-    interpreter running the tests when it is itself 3.11 or older. Returns
-    ``None`` if nothing suitable is available (the fixtures then skip).
+    ``make bootstrap`` builds the project's virtualenv with a bare
+    ``python3 -m venv``, so a generated project runs on whatever interpreter the
+    developer happens to have -- in practice the newest one installed. This
+    prefers the newest supported interpreter on PATH for the same reason.
+
+    It used to prefer the *oldest* (3.10/3.11), which hid a breakage for an
+    entire Python release: Python 3.14 changed ``copy.copy(super())``, so
+    Django 5.0's ``BaseContext.__copy__`` raised ``AttributeError: 'super'
+    object has no attribute 'dicts'`` and every page that renders an inclusion
+    tag -- the landing page included -- returned a 500, while this suite stayed
+    green on 3.10.
+
+    ``DJANGOROCKET_E2E_PYTHON`` overrides the choice, which is how CI pins each
+    end of the supported range to its matrix job (an interpreter name to look up
+    on PATH, or a full path). Returns ``None`` if nothing suitable is available
+    (the fixtures then skip).
 
     Note: ``requirements.txt`` pins the source ``psycopg2`` (no wheels), so the
     chosen interpreter's environment must have ``pg_config`` (libpq) on PATH to
     build it. The ``psycopg2==2.9.10`` pin itself builds fine on modern CPython.
     """
-    for name in ("python3.10", "python3.11"):
-        found = shutil.which(name)
+    override = os.environ.get("DJANGOROCKET_E2E_PYTHON")
+    if override:
+        return shutil.which(override) or override
+    for version in SUPPORTED_PYTHONS:
+        found = shutil.which("python{0}".format(version))
         if found:
             return found
-    if sys.version_info < (3, 12):
+    if sys.version_info >= (3, 10):
         return sys.executable
     return None
 
@@ -110,8 +129,10 @@ def project_venv(baked_project, tmp_path_factory):
     builder = _builder_python()
     if builder is None:
         pytest.skip(
-            "e2e needs a Python 3.10-3.12 interpreter to build the generated "
-            "project's pinned psycopg2==2.9.3 (none found on PATH)."
+            "e2e needs a Python {0} interpreter to build the generated "
+            "project's virtualenv (none found on PATH).".format(
+                "/".join(reversed(SUPPORTED_PYTHONS))
+            )
         )
 
     venv_dir = tmp_path_factory.mktemp("venv")

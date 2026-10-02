@@ -25,7 +25,7 @@ Before getting started, make sure to install the following dependencies:
 You can easily install them using [pip](https://github.com/pypa/pip):
 
 ```bash
-$ pip install cookiecutter==2.1.1 django==5.0.6
+$ pip install cookiecutter==2.1.1 django==5.2.17
 ```
 
 > **_NOTE:_** Although Django Rocket works with other versions of Cookiecutter and Django, we recommend using the versions mentioned above, as they are well-tested.
