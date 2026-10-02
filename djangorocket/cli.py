@@ -191,7 +191,11 @@ def init():
         )
 
     click.echo(click.style(f"✓ Created {os.path.relpath(project_dir)}", fg="green"))
-    click.echo(f"  cd {os.path.relpath(project_dir)}")
+    # Point at the absolute path: `init` may have been run from anywhere (e.g.
+    # `make playground` runs it in $PLAYGROUND_BASE_DIR), and the next step is
+    # opening the project in an editor, not cd-ing in this shell.
+    click.echo(f"  Open the project in your editor: {os.path.abspath(project_dir)}")
+
 
 @main.command()
 @click.argument("components", nargs=-1)
