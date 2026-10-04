@@ -1,0 +1,425 @@
+{% raw %}
+{% comment %}
+    Button — triggers an action. Three variants set the hierarchy: one primary
+    per view (the action that moves the task forward), secondary for the
+    alternatives, ghost for low-weight inline actions.
+
+    Labels sit flush left: a button wider than its label never centers it.
+
+    Usage
+    -----
+        {% include "button/button.html" with label="Create project" %}
+
+    Props
+    -----
+    label           Required. The button text. Verbs, sentence case, one line —
+                    it never truncates; the button grows. With icon_only it
+                    becomes the accessible name and the tooltip.
+    variant         Optional. "primary" (default), "secondary" or "ghost".
+    size            Optional. "sm" (32px), "md" (36px, default) or "lg" (48px).
+    href            Optional. Renders an <a> instead of a <button>. Use it for
+                    navigation and leave it off for actions, even when the two
+                    look the same.
+    type            Optional. "button" (default), "submit" or "reset". Ignored
+                    when href is set.
+    icon            Optional. Leading glyph: "plus", "download", "edit",
+                    "arrow", "chevron" or "check".
+    trailing_icon   Optional. Trailing glyph, same set.
+    icon_svg        Optional. Custom leading markup, used instead of icon.
+                    Mark it safe.
+    trailing_svg    Optional. Custom trailing markup, used instead of
+                    trailing_icon. Mark it safe.
+    icon_only       Optional. True drops the label from view and squares the
+                    button off. label still names it for screen readers and
+                    fills the tooltip.
+    block           Optional. True makes it full width with the label — and any
+                    trailing icon — flush against the left padding edge.
+    disabled        Optional. True dims it to 45% and takes it out of the tab
+                    order. Prefer an explained error over a disabled button; if
+                    it is disabled, say why nearby.
+    loading         Optional. True swaps a spinner in ahead of the label, hides
+                    the icons, sets aria-busy and ignores repeat clicks.
+    loading_label   Optional. The label while loading. Defaults to label.
+    name, value     Optional. Submitted with the form.
+    title           Optional. Tooltip. Defaults to label when icon_only.
+    button_id       Optional. DOM id, so a script can find this button.
+    extra_classes   Optional. Appended to the class list, as a JS or layout
+                    hook.
+    omit_assets     Optional. True skips the <style>/<svg>/<script> block. Pass
+                    it on every include after the first one on a page.
+
+    Theming
+    -------
+    Colors, type and spacing come from the design-system custom properties
+    (--color-text, --color-bg, --color-accent, --color-accent-600,
+    --color-accent-700, --color-divider, --font-heading, --radius-md,
+    --space-*), each with a fallback baked in, so the component looks right on a
+    page that does not define them and follows the theme on a page that does.
+{% endcomment %}
+{% if not omit_assets %}
+    <style>
+    .dr-btn {
+        /* Palette — follows the host theme when it defines these, falls back to
+           the Modernist tokens the component was designed against. */
+        --dr-btn-ink: var(--color-text, #201e1d);
+        --dr-btn-ground: var(--color-bg, #f3f2f2);
+        --dr-btn-accent: var(--color-accent, #ec3013);
+        --dr-btn-accent-hover: var(--color-accent-600, #dd2b0f);
+        --dr-btn-accent-press: var(--color-accent-700, #ae1800);
+        --dr-btn-divider: var(--color-divider, rgba(32, 30, 29, 0.4));
+
+        /* Metrics — medium. The size modifiers below retune them. */
+        --dr-btn-h: 36px;
+        --dr-btn-pad-y: var(--space-2, 8px);
+        --dr-btn-pad-x: calc(var(--space-3, 12px) * 1.2);
+        --dr-btn-font: 14px;
+        --dr-btn-icon: 16px;
+        --dr-btn-gap: 6px;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--dr-btn-gap);
+        min-height: var(--dr-btn-h);
+        padding: var(--dr-btn-pad-y) var(--dr-btn-pad-x);
+        background: transparent;
+        /* The edge is always drawn, transparent where the variant has none, so
+           every variant of a size measures the same box. */
+        border: 1px solid transparent;
+        border-radius: var(--radius-md, 0);
+        font-family: var(--font-heading, "Archivo", system-ui, sans-serif);
+        font-weight: var(--font-heading-weight, 800);
+        font-size: var(--dr-btn-font);
+        line-height: 1.2;
+        color: var(--dr-btn-ink);
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .dr-btn,
+    .dr-btn *,
+    .dr-btn *::before,
+    .dr-btn *::after {
+        box-sizing: border-box;
+    }
+
+    /* — sizes — */
+
+    .dr-btn--sm {
+        --dr-btn-h: 32px;
+        --dr-btn-pad-y: 6px;
+        --dr-btn-pad-x: 12px;
+        --dr-btn-font: 13px;
+    }
+
+    .dr-btn--lg {
+        --dr-btn-h: 48px;
+        --dr-btn-pad-y: 12px;
+        --dr-btn-pad-x: 20px;
+        --dr-btn-font: 16px;
+        --dr-btn-icon: 20px;
+        --dr-btn-gap: 8px;
+    }
+
+    /* — variants — */
+
+    .dr-btn--primary {
+        background: var(--dr-btn-accent);
+        color: var(--dr-btn-ground);
+    }
+
+    .dr-btn--secondary {
+        border-color: var(--dr-btn-divider);
+    }
+
+    .dr-btn--ghost {
+        color: var(--dr-btn-accent);
+    }
+
+    /* Ghost has no edge to sit behind, so it trims its inline padding and the
+       label lines up with the text it sits among. */
+    .dr-btn--ghost.dr-btn--sm,
+    .dr-btn--ghost.dr-btn--md {
+        --dr-btn-pad-x: var(--space-1, 4px);
+    }
+
+    .dr-btn--ghost.dr-btn--lg {
+        --dr-btn-pad-x: 8px;
+    }
+
+    /* — states — */
+
+    /* Hover is a pointer affordance only — suppressed on touch. */
+    @media (hover: hover) and (pointer: fine) {
+        .dr-btn--primary:hover:not(:disabled):not([aria-disabled="true"]) {
+            background: var(--dr-btn-accent-hover);
+        }
+
+        .dr-btn--secondary:hover:not(:disabled):not([aria-disabled="true"]) {
+            background: color-mix(in srgb, var(--dr-btn-ink) 7%, transparent);
+        }
+
+        .dr-btn--ghost:hover:not(:disabled):not([aria-disabled="true"]) {
+            background: color-mix(in srgb, var(--dr-btn-accent) 10%, transparent);
+        }
+    }
+
+    .dr-btn--primary:active:not(:disabled):not([aria-disabled="true"]) {
+        background: var(--dr-btn-accent-press);
+    }
+
+    .dr-btn--secondary:active:not(:disabled):not([aria-disabled="true"]) {
+        background: color-mix(in srgb, var(--dr-btn-ink) 14%, transparent);
+    }
+
+    .dr-btn--ghost:active:not(:disabled):not([aria-disabled="true"]) {
+        background: color-mix(in srgb, var(--dr-btn-accent) 18%, transparent);
+    }
+
+    /* The ring sits outside the edge, so it reads on a solid fill too. */
+    .dr-btn:focus-visible {
+        outline: 2px solid var(--dr-btn-accent);
+        outline-offset: 2px;
+    }
+
+    .dr-btn:disabled,
+    .dr-btn[aria-disabled="true"] {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
+    /* — parts — */
+
+    .dr-btn__icon {
+        flex: none;
+        display: block;
+        width: var(--dr-btn-icon);
+        height: var(--dr-btn-icon);
+    }
+
+    /* .dr-btn__label carries no styles of its own: a flex item's default
+       min-width keeps it from being squashed below its own text, which is what
+       makes a long label grow the button instead of truncating it. The class is
+       there as the handle a script swaps the text through. */
+
+    /* — loading — the spinner leads and the icons stand down — */
+
+    .dr-btn[aria-busy="true"] {
+        cursor: progress;
+    }
+
+    .dr-btn[aria-busy="true"] .dr-btn__icon:not(.dr-btn__spinner) {
+        display: none;
+    }
+
+    .dr-btn__spinner {
+        animation: dr-btn-spin 0.8s linear infinite;
+    }
+
+    @keyframes dr-btn-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Hold still for readers who ask for less motion, but keep turning — a
+       frozen spinner reads as a hung button. */
+    @media (prefers-reduced-motion: reduce) {
+        .dr-btn__spinner {
+            animation-duration: 2.4s;
+            animation-timing-function: steps(8, end);
+        }
+    }
+
+    /* — icon only — a square box, named by aria-label — */
+
+    .dr-btn--icon-only {
+        width: var(--dr-btn-h);
+        padding: 0;
+    }
+
+    /* — block — full width, label flush against the left padding edge — */
+
+    .dr-btn--block {
+        width: 100%;
+        justify-content: flex-start;
+        text-align: left;
+    }
+
+    /* On touch, Small is below the 44px minimum, so it carries the rest of the
+       hit area as padding drawn outside its box. */
+    @media (pointer: coarse) {
+        .dr-btn--sm {
+            position: relative;
+        }
+
+        .dr-btn--sm::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            min-width: 44px;
+            height: 44px;
+            transform: translate(-50%, -50%);
+        }
+    }
+
+    /* The icon sprite is markup, not picture: take it out of flow so it cannot
+       open a gap wherever the asset block happens to land on the page. */
+    .dr-btn-sprite {
+        position: absolute;
+        width: 0;
+        height: 0;
+    }
+    </style>
+    <svg class="dr-btn-sprite" width="0" height="0" aria-hidden="true" focusable="false">
+        <symbol id="dr-btn-i-plus"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.25"
+                stroke-linecap="square">
+            <path d="M5 12h14" />
+            <path d="M12 5v14" />
+        </symbol>
+        <symbol id="dr-btn-i-download"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.25"
+                stroke-linecap="square">
+            <path d="M12 4v12" />
+            <path d="m6 10 6 6 6-6" />
+            <path d="M5 20h14" />
+        </symbol>
+        <symbol id="dr-btn-i-edit"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.25"
+                stroke-linecap="square">
+            <path d="M4 20h4L19 9l-4-4L4 16z" />
+        </symbol>
+        <symbol id="dr-btn-i-arrow"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.25"
+                stroke-linecap="square">
+            <path d="M5 12h14" />
+            <path d="m13 6 6 6-6 6" />
+        </symbol>
+        <symbol id="dr-btn-i-chevron"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.25"
+                stroke-linecap="square">
+            <path d="m9 6 6 6-6 6" />
+        </symbol>
+        <symbol id="dr-btn-i-check"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.25"
+                stroke-linecap="square">
+            <path d="M5 12l5 5 9-10" />
+        </symbol>
+        <symbol id="dr-btn-i-spinner"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.25"
+                stroke-linecap="square">
+            <path d="M21 12a9 9 0 1 1-6.22-8.56" />
+        </symbol>
+    </svg>
+{% endif %}
+{% with btn_tag=href|yesno:"a,button" btn_variant=variant|default:"primary" btn_size=size|default:"md" btn_type=type|default:"button" %}
+    <{{ btn_tag }} class="dr-btn dr-btn--{{ btn_variant }} dr-btn--{{ btn_size }}{% if icon_only %} dr-btn--icon-only{% endif %}{% if block %} dr-btn--block{% endif %}{% if extra_classes %} {{ extra_classes }}{% endif %}"
+    {% if button_id %}id="{{ button_id }}"{% endif %}
+    {% if href %}
+        {% if disabled %}aria-disabled="true" tabindex="-1"{% else %}href="{{ href }}"{% endif %}
+    {% else %}
+        type="{{ btn_type }}"
+        {% if name %}name="{{ name }}"{% endif %}
+        {% if value %}value="{{ value }}"{% endif %}
+        {% if disabled %}disabled{% endif %}
+    {% endif %}
+    {% if loading %}aria-busy="true"{% endif %}
+    {% comment %}An icon-only button is named by its aria-label and explained by its tooltip.{% endcomment %}
+    {% if icon_only %}
+        aria-label="{{ label }}" title="{{ title|default:label }}"
+    {% elif title %}
+        title="{{ title }}"
+    {% endif %}>
+    {% if loading %}
+        <svg class="dr-btn__icon dr-btn__spinner" aria-hidden="true" focusable="false">
+            <use href="#dr-btn-i-spinner" />
+        </svg>
+    {% endif %}
+    {% if icon_svg %}
+        {{ icon_svg }}
+    {% elif icon %}
+        <svg class="dr-btn__icon" aria-hidden="true" focusable="false">
+            <use href="#dr-btn-i-{{ icon }}" />
+        </svg>
+    {% endif %}
+    {% if not icon_only %}<span class="dr-btn__label">{% firstof loading_label label %}</span>{% endif %}
+    {% if trailing_svg %}
+        {{ trailing_svg }}
+    {% elif trailing_icon %}
+        <svg class="dr-btn__icon" aria-hidden="true" focusable="false">
+            <use href="#dr-btn-i-{{ trailing_icon }}" />
+        </svg>
+    {% endif %}
+    </{{ btn_tag }}>
+{% endwith %}
+{% if not omit_assets %}
+    <script>
+    (function () {
+        if (window.__drButtonReady) return;
+        window.__drButtonReady = true;
+
+        var SPINNER =
+            '<svg class="dr-btn__icon dr-btn__spinner" aria-hidden="true" focusable="false">' +
+            '<use href="#dr-btn-i-spinner"></use></svg>';
+
+        /* A busy button has already been pressed, so swallow the repeats — from
+           the pointer and from Enter/Space alike, since both arrive as a click.
+           Captured on the way down so the page's own handlers never see them. */
+        document.addEventListener("click", function (event) {
+            var button = event.target.closest ? event.target.closest(".dr-btn") : null;
+            if (button && button.getAttribute("aria-busy") === "true") {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        }, true);
+
+        /* Toggle the loading state from the page's own script — on submit, say.
+           Holds the width the label had, so a row of controls does not reflow
+           around the button while it works. */
+        window.drButton = {
+            setLoading: function (button, loading) {
+                if (!button) return;
+                if (loading) {
+                    if (!button.style.minWidth) {
+                        button.style.minWidth = button.offsetWidth + "px";
+                    }
+                    button.setAttribute("aria-busy", "true");
+                    if (!button.querySelector(".dr-btn__spinner")) {
+                        button.insertAdjacentHTML("afterbegin", SPINNER);
+                    }
+                } else {
+                    button.removeAttribute("aria-busy");
+                    button.style.minWidth = "";
+                    var spinner = button.querySelector(".dr-btn__spinner");
+                    if (spinner) spinner.parentNode.removeChild(spinner);
+                }
+            }
+        };
+    })();
+    </script>
+{% endif %}
+{% endraw %}
