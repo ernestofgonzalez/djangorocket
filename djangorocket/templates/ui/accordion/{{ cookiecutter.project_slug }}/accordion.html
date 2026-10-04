@@ -1,3 +1,568 @@
 {% raw %}
-    <span></span>
+{% comment %}
+    Accordion — a vertically stacked set of headers that each reveal one section
+    of content. Use it to shorten long pages of secondary detail (FAQs, settings
+    groups, specs) where readers scan titles and open only what they need.
+
+    No motion: sections open and close instantly.
+
+    Usage
+    -----
+        {% include "accordion/accordion.html" with title="Questions" items=faq_items %}
+
+    Props
+    -----
+    items           Required. A list of dicts (or objects) with:
+                      title     The header label. Wraps; never truncated.
+                      body      The panel content. Plain text; mark it safe to
+                                pass HTML.
+                      meta      Optional. A short qualifier rendered under the
+                                title on tablet and desktop — use it to say why
+                                a disabled item is unavailable.
+                      open      Optional. True renders this section open.
+                      disabled  Optional. True dims the header to 45% and takes
+                                it out of the tab order and the arrow-key ring.
+                      id        Optional. Becomes the panel's DOM id, so a URL
+                                fragment (#billing) opens that section on load.
+    title           Optional. The section heading beside / above the list.
+    description     Optional. A short line under the heading. Hidden on mobile.
+    allow_multiple  Optional. True lets several sections stay open at once.
+                    Default (False) is single: opening one closes the other.
+    show_index      Optional. True numbers the headers 01, 02, 03... The index
+                    is dropped on mobile.
+    icon_style      Optional. "chevron" (default) or "plus".
+    open_index      Optional. Index of the section open on first render.
+                    Defaults to 0; pass -1 to start with every section closed.
+    heading_level   Optional. The heading tag the triggers sit in, so the
+                    accordion slots into the page outline. Defaults to 3.
+    component_id    Optional. Prefix for generated DOM ids. Defaults to
+                    "accordion". Set it when a page has more than one accordion
+                    and the items carry no explicit ids.
+    omit_assets     Optional. True skips the <style>/<script> block. Pass it on
+                    every include after the first one on a page.
+
+    Theming
+    -------
+    Colors, type and spacing come from the design-system custom properties
+    (--color-text, --color-accent, --color-divider, --font-heading, --font-body,
+    --space-*), each with a fallback baked in, so the component looks right on a
+    page that does not define them and follows the theme on a page that does.
+{% endcomment %}
+{% if not omit_assets %}
+    <style>
+    .dr-accordion {
+        /* Palette — follows the host theme when it defines these, falls back to
+           the Modernist tokens the component was designed against. */
+        --dr-acc-ink: var(--color-text, #201e1d);
+        --dr-acc-accent: var(--color-accent, #ec3013);
+        --dr-acc-divider: var(--color-divider, rgba(32, 30, 29, 0.4));
+        --dr-acc-muted: color-mix(in srgb, var(--dr-acc-ink) 55%, transparent);
+        --dr-acc-hover: color-mix(in srgb, var(--dr-acc-ink) 7%, transparent);
+        --dr-acc-pressed: color-mix(in srgb, var(--dr-acc-ink) 14%, transparent);
+        --dr-acc-font-heading: var(--font-heading, "Archivo", system-ui, sans-serif);
+        --dr-acc-font-body: var(--font-body, "Archivo", system-ui, sans-serif);
+
+        /* Metrics — mobile (< 640px). The breakpoints below retune them. */
+        --dr-acc-gap: var(--space-2, 8px);
+        --dr-acc-min-h: 48px;
+        --dr-acc-pad-y: 12px;
+        --dr-acc-title-size: 16px;
+        --dr-acc-title-lh: 1.35;
+        --dr-acc-title-pt: 2px;
+        --dr-acc-icon-box: 44px;
+        --dr-acc-icon-h: 24px;
+        --dr-acc-icon-just: flex-end;
+        --dr-acc-index-w: 0px;
+        --dr-acc-panel-pb: 16px;
+        --dr-acc-panel-pr: 0px;
+        --dr-acc-body-max: none;
+
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-4, 16px);
+        font-family: var(--dr-acc-font-body);
+        color: var(--dr-acc-ink);
+    }
+
+    .dr-accordion *,
+    .dr-accordion *::before,
+    .dr-accordion *::after {
+        box-sizing: border-box;
+    }
+
+    /* — intro — */
+
+    .dr-accordion__intro {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2, 8px);
+    }
+
+    .dr-accordion__title {
+        margin: 0;
+        font-family: var(--dr-acc-font-heading);
+        font-weight: var(--font-heading-weight, 800);
+        font-size: 25px;
+        line-height: 1.12;
+        letter-spacing: -0.015em;
+    }
+
+    /* Mobile drops the description: the heading alone carries the section. */
+    .dr-accordion__description {
+        display: none;
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.55;
+    }
+
+    /* — the list — 2px ink outer rules, 2px divider between items — */
+
+    .dr-accordion__list {
+        border-top: 2px solid var(--dr-acc-ink);
+        border-bottom: 2px solid var(--dr-acc-ink);
+    }
+
+    .dr-accordion__item {
+        border-top: 2px solid var(--dr-acc-divider);
+    }
+
+    .dr-accordion__heading {
+        margin: 0;
+        font-size: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+        letter-spacing: 0;
+    }
+
+    /* — header — */
+
+    .dr-accordion__trigger {
+        width: 100%;
+        min-height: var(--dr-acc-min-h);
+        display: flex;
+        align-items: flex-start;
+        gap: var(--dr-acc-gap);
+        padding: var(--dr-acc-pad-y) 0;
+        background: transparent;
+        border: 0;
+        text-align: left;
+        font-family: var(--dr-acc-font-heading);
+        color: var(--dr-acc-ink);
+        cursor: pointer;
+        outline-offset: -2px;
+    }
+
+    .dr-accordion__trigger:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
+    /* Hover is a pointer affordance only — suppressed on touch. */
+    @media (hover: hover) and (pointer: fine) {
+        .dr-accordion__trigger:hover:not(:disabled) {
+            background: var(--dr-acc-hover);
+        }
+    }
+
+    .dr-accordion__trigger:active:not(:disabled) {
+        background: var(--dr-acc-pressed);
+    }
+
+    /* Drawn inset so the list's own rules never clip the ring. */
+    .dr-accordion__trigger:focus-visible {
+        outline: 2px solid var(--dr-acc-accent);
+        outline-offset: -2px;
+    }
+
+    .dr-accordion__index {
+        display: none;
+        flex: none;
+        width: var(--dr-acc-index-w);
+        padding-left: var(--space-3, 12px);
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--dr-acc-ink);
+    }
+
+    .dr-accordion__label {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        padding-top: var(--dr-acc-title-pt);
+        font-size: var(--dr-acc-title-size);
+        font-weight: 600;
+        line-height: var(--dr-acc-title-lh);
+    }
+
+    .dr-accordion__meta {
+        display: none;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 1.4;
+        color: var(--dr-acc-muted);
+    }
+
+    .dr-accordion__icon {
+        flex: none;
+        width: var(--dr-acc-icon-box);
+        height: var(--dr-acc-icon-h);
+        display: flex;
+        align-items: center;
+        justify-content: var(--dr-acc-icon-just);
+        color: var(--dr-acc-ink);
+    }
+
+    .dr-accordion__icon svg {
+        display: block;
+    }
+
+    /* Expanded marks the index and the icon in accent; the title stays ink. */
+    .dr-accordion__trigger[aria-expanded="true"] .dr-accordion__index,
+    .dr-accordion__trigger[aria-expanded="true"] .dr-accordion__icon {
+        color: var(--dr-acc-accent);
+    }
+
+    /* The glyph swaps in the same frame the panel renders — no rotation. */
+    .dr-accordion__trigger[aria-expanded="true"] .dr-accordion__icon--closed,
+    .dr-accordion__trigger[aria-expanded="false"] .dr-accordion__icon--open {
+        display: none;
+    }
+
+    /* — panel — */
+
+    .dr-accordion__panel {
+        display: flex;
+        padding: 0 var(--dr-acc-panel-pr) var(--dr-acc-panel-pb) 0;
+    }
+
+    .dr-accordion__panel[hidden] {
+        display: none;
+    }
+
+    /* Closed panels stay in the DOM as hidden="until-found" so find-in-page can
+       open them. Only claim that where the engine can actually honour it —
+       elsewhere the rule above keeps them properly hidden. */
+    @supports (content-visibility: hidden) {
+        .dr-accordion__panel[hidden="until-found"] {
+            display: flex;
+            content-visibility: hidden;
+            /* content-visibility skips the children but keeps this element's own
+               box, so the padding has to go too or every closed row carries it. */
+            padding: 0;
+        }
+    }
+
+    .dr-accordion__panel-spacer {
+        display: none;
+        flex: none;
+        width: var(--dr-acc-index-w);
+    }
+
+    .dr-accordion__body {
+        margin: 0;
+        max-width: var(--dr-acc-body-max);
+        font-size: 15px;
+        line-height: 1.6;
+        text-wrap: pretty;
+    }
+
+    /* — tablet — 640–1023px — */
+
+    @media (min-width: 640px) {
+        .dr-accordion {
+            --dr-acc-gap: 0px;
+            --dr-acc-min-h: 56px;
+            --dr-acc-pad-y: 16px;
+            --dr-acc-title-size: 18px;
+            --dr-acc-title-lh: 1.3;
+            --dr-acc-title-pt: 0px;
+            --dr-acc-icon-box: 40px;
+            --dr-acc-icon-just: center;
+            --dr-acc-index-w: 48px;
+            --dr-acc-panel-pb: 20px;
+            --dr-acc-panel-pr: 40px;
+            --dr-acc-body-max: 68ch;
+
+            gap: var(--space-6, 24px);
+        }
+
+        .dr-accordion__title {
+            font-size: 28px;
+        }
+
+        .dr-accordion__description {
+            display: block;
+        }
+
+        .dr-accordion--indexed .dr-accordion__index {
+            display: block;
+            padding-top: 3px;
+        }
+
+        .dr-accordion--indexed .dr-accordion__panel-spacer {
+            display: block;
+        }
+
+        .dr-accordion__meta {
+            display: block;
+        }
+    }
+
+    /* — desktop — ≥ 1024px: the list sits in a 3-of-4 column span — */
+
+    @media (min-width: 1024px) {
+        .dr-accordion {
+            --dr-acc-min-h: 64px;
+            --dr-acc-pad-y: 20px;
+            --dr-acc-title-size: 20px;
+            --dr-acc-icon-h: 40px;
+            --dr-acc-index-w: 64px;
+            --dr-acc-panel-pb: var(--space-6, 24px);
+
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: var(--space-8, 32px);
+            align-items: start;
+        }
+
+        .dr-accordion__intro {
+            gap: var(--space-3, 12px);
+        }
+
+        .dr-accordion__title {
+            font-size: 32px;
+        }
+
+        .dr-accordion__description {
+            max-width: 28ch;
+        }
+
+        .dr-accordion__list {
+            grid-column: 2 / span 3;
+        }
+
+        .dr-accordion__trigger {
+            align-items: center;
+        }
+
+        .dr-accordion--indexed .dr-accordion__index {
+            padding-top: 0;
+        }
+    }
+    </style>
+{% endif %}
+{% with acc_id=component_id|default:"accordion" acc_open=open_index|default:0 %}
+    <div class="dr-accordion{% if show_index %} dr-accordion--indexed{% endif %}"
+         data-dr-accordion
+         data-dr-accordion-multiple="{% if allow_multiple %}true{% else %}false{% endif %}">
+        {% if title or description %}
+            <div class="dr-accordion__intro">
+                {% if title %}<h2 class="dr-accordion__title">{{ title }}</h2>{% endif %}
+                {% if description %}<p class="dr-accordion__description">{{ description }}</p>{% endif %}
+            </div>
+        {% endif %}
+        <div class="dr-accordion__list">
+            {% for item in items %}
+                {% with idx=forloop.counter0|stringformat:"s" %}
+                    {% firstof item.id acc_id|add:"-"|add:idx as item_id %}
+                    <div class="dr-accordion__item">
+                        <h{{ heading_level|default:3 }} class="dr-accordion__heading">
+                            <button type="button"
+                                    class="dr-accordion__trigger"
+                                    data-dr-accordion-trigger
+                                    id="{{ item_id }}-trigger"
+                                    aria-controls="{{ item_id }}"
+                                    aria-expanded="{% if item.disabled or not item.open and forloop.counter0 != acc_open %}false{% else %}true{% endif %}"
+                                    {% if item.disabled %}disabled{% endif %}>
+                                {% if show_index %}
+                                    <span class="dr-accordion__index">{{ forloop.counter|stringformat:"02d" }}</span>
+                                {% endif %}
+                                <span class="dr-accordion__label">
+                                    <span class="dr-accordion__label-text">{{ item.title }}</span>
+                                    {% if item.meta %}<span class="dr-accordion__meta">{{ item.meta }}</span>{% endif %}
+                                </span>
+                                <span class="dr-accordion__icon">
+                                    {% if icon_style|default:"chevron" == "plus" %}
+                                        <svg class="dr-accordion__icon--closed"
+                                             width="20"
+                                             height="20"
+                                             viewBox="0 0 24 24"
+                                             fill="none"
+                                             stroke="currentColor"
+                                             stroke-width="2.25"
+                                             stroke-linecap="square"
+                                             aria-hidden="true">
+                                            <path d="M5 12h14" />
+                                            <path d="M12 5v14" />
+                                        </svg>
+                                        <svg class="dr-accordion__icon--open"
+                                             width="20"
+                                             height="20"
+                                             viewBox="0 0 24 24"
+                                             fill="none"
+                                             stroke="currentColor"
+                                             stroke-width="2.25"
+                                             stroke-linecap="square"
+                                             aria-hidden="true">
+                                            <path d="M5 12h14" />
+                                        </svg>
+                                    {% else %}
+                                        <svg class="dr-accordion__icon--closed"
+                                             width="20"
+                                             height="20"
+                                             viewBox="0 0 24 24"
+                                             fill="none"
+                                             stroke="currentColor"
+                                             stroke-width="2.25"
+                                             stroke-linecap="square"
+                                             aria-hidden="true">
+                                            <path d="m6 9 6 6 6-6" />
+                                        </svg>
+                                        <svg class="dr-accordion__icon--open"
+                                             width="20"
+                                             height="20"
+                                             viewBox="0 0 24 24"
+                                             fill="none"
+                                             stroke="currentColor"
+                                             stroke-width="2.25"
+                                             stroke-linecap="square"
+                                             aria-hidden="true">
+                                            <path d="m18 15-6-6-6 6" />
+                                        </svg>
+                                    {% endif %}
+                                </span>
+                            </button>
+                        </h{{ heading_level|default:3 }}>
+                        <div class="dr-accordion__panel"
+                             data-dr-accordion-panel
+                             role="region"
+                             id="{{ item_id }}"
+                             aria-labelledby="{{ item_id }}-trigger"
+                             {% if item.disabled or not item.open and forloop.counter0 != acc_open %}hidden="until-found"{% endif %}>
+                            {% if show_index %}<span class="dr-accordion__panel-spacer"></span>{% endif %}
+                            <p class="dr-accordion__body">{{ item.body }}</p>
+                        </div>
+                    </div>
+            {% endwith %}
+        {% endfor %}
+    </div>
+</div>
+{% endwith %}
+{% if not omit_assets %}
+    <script>
+    (function () {
+        if (window.__drAccordionReady) return;
+        window.__drAccordionReady = true;
+
+        var ROOT = "[data-dr-accordion]";
+        var TRIGGER = "[data-dr-accordion-trigger]";
+
+        function closest(node, selector) {
+            return node && node.closest ? node.closest(selector) : null;
+        }
+
+        function panelOf(trigger) {
+            var id = trigger.getAttribute("aria-controls");
+            return id ? document.getElementById(id) : null;
+        }
+
+        function triggerOf(panel) {
+            var id = panel.getAttribute("aria-labelledby");
+            return id ? document.getElementById(id) : null;
+        }
+
+        /* No transitions anywhere: the panel and the glyph swap in one frame. */
+        function setOpen(trigger, open) {
+            trigger.setAttribute("aria-expanded", open ? "true" : "false");
+            var panel = panelOf(trigger);
+            if (!panel) return;
+            if (open) panel.removeAttribute("hidden");
+            else panel.setAttribute("hidden", "until-found");
+        }
+
+        function triggersIn(root) {
+            return Array.prototype.slice.call(root.querySelectorAll(TRIGGER));
+        }
+
+        function toggle(trigger) {
+            var root = closest(trigger, ROOT);
+            if (!root) return;
+            var open = trigger.getAttribute("aria-expanded") !== "true";
+            /* Single mode: opening one section closes the one that was open.
+               Every section may be closed — none is ever forced open. */
+            if (open && root.getAttribute("data-dr-accordion-multiple") !== "true") {
+                triggersIn(root).forEach(function (other) {
+                    if (other !== trigger) setOpen(other, false);
+                });
+            }
+            setOpen(trigger, open);
+        }
+
+        /* The whole row is the target, not just the icon. */
+        document.addEventListener("click", function (event) {
+            var trigger = closest(event.target, TRIGGER);
+            if (trigger && !trigger.disabled) toggle(trigger);
+        });
+
+        /* Arrow keys move focus within one accordion and wrap; Home and End jump
+           to the first and last header. Disabled headers are skipped. Enter and
+           Space are left to the button itself. */
+        document.addEventListener("keydown", function (event) {
+            var keys = ["ArrowDown", "ArrowUp", "Home", "End"];
+            if (keys.indexOf(event.key) === -1) return;
+            var trigger = closest(event.target, TRIGGER);
+            if (!trigger) return;
+            var root = closest(trigger, ROOT);
+            if (!root) return;
+
+            var items = triggersIn(root).filter(function (candidate) {
+                return !candidate.disabled;
+            });
+            var length = items.length;
+            if (!length) return;
+
+            var index = items.indexOf(trigger);
+            var next =
+                event.key === "Home" ? 0 :
+                event.key === "End" ? length - 1 :
+                event.key === "ArrowDown" ? (index + 1) % length :
+                (index - 1 + length) % length;
+
+            event.preventDefault();
+            items[next].focus();
+        });
+
+        /* Find-in-page reveals a closed panel on its own; keep the header's
+           state and glyph in step with what the reader can now see. */
+        document.addEventListener("beforematch", function (event) {
+            var panel = closest(event.target, "[data-dr-accordion-panel]");
+            if (!panel) return;
+            var trigger = triggerOf(panel);
+            if (trigger) trigger.setAttribute("aria-expanded", "true");
+        }, true);
+
+        /* A URL fragment naming a panel opens that section and focuses its
+           header, so a deep link lands the reader on the right answer. */
+        function openFromHash() {
+            var id = window.location.hash.slice(1);
+            if (!id) return;
+            var panel = document.getElementById(id);
+            if (!panel || !panel.hasAttribute("data-dr-accordion-panel")) return;
+            var trigger = triggerOf(panel);
+            if (!trigger || trigger.disabled) return;
+            if (trigger.getAttribute("aria-expanded") !== "true") toggle(trigger);
+            trigger.focus();
+        }
+
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", openFromHash);
+        } else {
+            openFromHash();
+        }
+        window.addEventListener("hashchange", openFromHash);
+    })();
+    </script>
+{% endif %}
 {% endraw %}

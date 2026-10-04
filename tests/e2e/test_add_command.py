@@ -90,7 +90,10 @@ def test_add_accordion_writes_rendered_template(tmp_path, accordion_zip):
     assert rendered.is_file(), result.stdout
 
     text = rendered.read_text(encoding="utf-8")
-    assert "<span></span>" in text
+    # The component ships as a Django include: its own markup, styles and script.
+    assert "dr-accordion" in text
+    assert "{% for item in items %}" in text
+    assert 'role="region"' in text
     # No cookiecutter/jinja scaffolding should survive into the generated file.
     assert "{{ cookiecutter" not in text
     assert "{% raw %}" not in text and "{% endraw %}" not in text
