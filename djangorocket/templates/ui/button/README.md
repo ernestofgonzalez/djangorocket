@@ -14,15 +14,15 @@ The template lands at `<templates_dir>/button/button.html`.
 ## Usage
 
 ```django
-{% include "button/button.html" with label="Create project" %}
+{% include "components/ui/button/button.html" with label="Create project" %}
 ```
 
 Every other include on the page passes `omit_assets=True`, so the shared
 `<style>`, icon sprite and `<script>` are written once:
 
 ```django
-{% include "button/button.html" with label="Create project" %}
-{% include "button/button.html" with label="Cancel" variant="secondary" omit_assets=True %}
+{% include "components/ui/button/button.html" with label="Create project" %}
+{% include "components/ui/button/button.html" with label="Cancel" variant="secondary" omit_assets=True %}
 ```
 
 `{% include %}` inherits the page's context, so a view that already has a
@@ -30,7 +30,7 @@ Every other include on the page passes `omit_assets=True`, so the shared
 it off:
 
 ```django
-{% include "button/button.html" with label="Cancel" variant="secondary" omit_assets=True only %}
+{% include "components/ui/button/button.html" with label="Cancel" variant="secondary" omit_assets=True only %}
 ```
 
 ## Props
@@ -64,7 +64,7 @@ it off:
 carries. Anything else goes through `icon_svg` / `trailing_svg`:
 
 ```django
-{% include "button/button.html" with label="Sign in with GitHub" icon_svg=github_mark omit_assets=True %}
+{% include "components/ui/button/button.html" with label="Sign in with GitHub" icon_svg=github_mark omit_assets=True %}
 ```
 
 ## Choosing a variant
@@ -91,7 +91,7 @@ button already had before the spinner swaps in, so a row of controls does not
 reflow around it:
 
 ```django
-{% include "button/button.html" with label="Submit order" type="submit" button_id="place-order" %}
+{% include "components/ui/button/button.html" with label="Submit order" type="submit" button_id="place-order" %}
 ```
 
 ```js

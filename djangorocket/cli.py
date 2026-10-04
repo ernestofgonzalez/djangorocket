@@ -200,12 +200,32 @@ def init():
     click.echo(f"  Open the project in your editor: {os.path.abspath(project_dir)}")
 
 
+def _display_path(path):
+    """``path`` relative to the working directory, or absolute if outside it.
+
+    ``add`` is run from the project root, where the relative path is short and
+    doubles as the component's include path. A destination outside the working
+    directory -- a ``--templates-dir`` elsewhere, or a working directory reached
+    through a symlink -- relativises to something longer and less clear than the
+    absolute path.
+    """
+    relative = os.path.relpath(path)
+    if relative == os.pardir or relative.startswith(os.pardir + os.sep):
+        return os.path.abspath(path)
+    return relative
+
+
 @main.command()
 @click.argument("components", nargs=-1)
 @click.option(
     "--templates-dir",
     default=None,
-    help="Directory where the new template source file should be added to.",
+    type=click.Path(file_okay=False),
+    help=(
+        "The project's templates directory. Defaults to the first entry of "
+        "TEMPLATES['DIRS'] in the project's settings.py. Components are written "
+        "to components/ui/<name>/ inside it either way."
+    ),
 )
 def add(components, templates_dir):
     """Add a UI cookiecutter template to an existing DjangoRocket project."""
@@ -214,6 +234,12 @@ def add(components, templates_dir):
             django_settings = DjangoSettingsManager()
             templates_dir = django_settings.get_templates_dir()
 
-        add_components(components, templates_dir)
+        for destination in add_components(components, templates_dir):
+            click.echo(click.style(f"✓ Added {_display_path(destination)}", fg="green"))
     except Exception as e:
-        click.echo(f"Error: {e}")
+        # Report failures as a ClickException: it prints the same "Error: ..."
+        # line but exits non-zero. Echoing and falling off the end of the
+        # command made every failure -- an unknown component, a project whose
+        # templates directory could not be found, an outdated install missing
+        # the code this command needs -- look like a successful no-op.
+        raise click.ClickException(str(e))

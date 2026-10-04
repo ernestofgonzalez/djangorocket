@@ -60,6 +60,20 @@ To add a UI component to an existing Django Rocket project, run `add` from the p
 $ djangorocket add accordion
 ```
 
+Each component lands in the project's templates directory under `components/ui/`, as a self-contained Django include with its own styles and behaviour and a README covering its props — `src/templates/components/ui/accordion/accordion.html` for the command above, which makes it includable as:
+
+```
+{% include "components/ui/accordion/accordion.html" with title="Questions" items=faq_items %}
+```
+
+`accordion` and `button` ship today; name several at once to install them together:
+
+```bash
+$ djangorocket add accordion button
+```
+
+Components go to the first directory in your settings' `TEMPLATES['DIRS']`. Pass `--templates-dir` to name another templates root; they still land under `components/ui/` inside it.
+
 ### Using cookiecutter directly
 
 Django Rocket is also usable as a plain Cookiecutter template, without installing the CLI:

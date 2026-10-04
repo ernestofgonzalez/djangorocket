@@ -15,7 +15,7 @@ The template lands at `<templates_dir>/accordion/accordion.html`.
 ## Usage
 
 ```django
-{% include "accordion/accordion.html" with title="Questions" items=faq_items %}
+{% include "components/ui/accordion/accordion.html" with title="Questions" items=faq_items %}
 ```
 
 `items` is whatever iterable of mappings (or objects) your view hands the
@@ -74,8 +74,8 @@ The first include carries the shared `<style>` and `<script>`; later ones pass
 `omit_assets=True` and a distinct `component_id`:
 
 ```django
-{% include "accordion/accordion.html" with title="Questions" items=faq_items component_id="faq" %}
-{% include "accordion/accordion.html" with title="Specifications" items=spec_items component_id="specs" omit_assets=True %}
+{% include "components/ui/accordion/accordion.html" with title="Questions" items=faq_items component_id="faq" %}
+{% include "components/ui/accordion/accordion.html" with title="Specifications" items=spec_items component_id="specs" omit_assets=True %}
 ```
 
 Each accordion keeps its own open state; single mode never reaches across.
