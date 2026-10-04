@@ -86,9 +86,7 @@ class RegisterViewTests(TestCase):
         response = self.client.post(url, data=data, follow=True)
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertContains(
-            response, "You need to enter a password.", html=True
-        )
+        self.assertContains(response, "You need to enter a password.", html=True)
 
     def test_post_password_with_less_than_8_characters_displays_error_message(self):
         url = reverse("{{cookiecutter.project_slug }}-auth:register")

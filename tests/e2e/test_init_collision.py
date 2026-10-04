@@ -154,7 +154,9 @@ def test_init_avoids_existing_docker_volume(tmp_path):
         text=True,
     )
     if created.returncode != 0:
-        pytest.skip("docker volume create failed (daemon down?): {0}".format(created.stderr))
+        pytest.skip(
+            "docker volume create failed (daemon down?): {0}".format(created.stderr)
+        )
 
     try:
         result = _init("Volume Dedup", tmp_path)
@@ -166,7 +168,9 @@ def test_init_avoids_existing_docker_volume(tmp_path):
         assert not (tmp_path / base).exists(), existing
         assert (tmp_path / "{0}-1".format(base)).is_dir(), existing
     finally:
-        subprocess.run(["docker", "volume", "rm", volume], capture_output=True, text=True)
+        subprocess.run(
+            ["docker", "volume", "rm", volume], capture_output=True, text=True
+        )
 
 
 @pytest.mark.e2e
@@ -215,16 +219,43 @@ def test_two_projects_run_postgres_and_redis_concurrently(tmp_path):
         db_b = _env_value(second, "POSTGRES_DB")
         assert db_a != db_b
         _compose(
-            first, "exec", "-T", "postgres",
-            "psql", "-U", "postgres", "-d", db_a, "-c", "CREATE TABLE marker (id int);",
+            first,
+            "exec",
+            "-T",
+            "postgres",
+            "psql",
+            "-U",
+            "postgres",
+            "-d",
+            db_a,
+            "-c",
+            "CREATE TABLE marker (id int);",
         )
         seen_in_a = _compose(
-            first, "exec", "-T", "postgres", "psql", "-U", "postgres", "-d", db_a,
-            "-tAc", "SELECT to_regclass('public.marker') IS NOT NULL;",
+            first,
+            "exec",
+            "-T",
+            "postgres",
+            "psql",
+            "-U",
+            "postgres",
+            "-d",
+            db_a,
+            "-tAc",
+            "SELECT to_regclass('public.marker') IS NOT NULL;",
         )
         seen_in_b = _compose(
-            second, "exec", "-T", "postgres", "psql", "-U", "postgres", "-d", db_b,
-            "-tAc", "SELECT to_regclass('public.marker') IS NOT NULL;",
+            second,
+            "exec",
+            "-T",
+            "postgres",
+            "psql",
+            "-U",
+            "postgres",
+            "-d",
+            db_b,
+            "-tAc",
+            "SELECT to_regclass('public.marker') IS NOT NULL;",
         )
         assert seen_in_a.stdout.strip() == "t", seen_in_a.stdout
         assert seen_in_b.stdout.strip() == "f", seen_in_b.stdout

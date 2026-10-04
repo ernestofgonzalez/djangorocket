@@ -26,7 +26,9 @@ def add_components(components, templates_dir=None):
 
 def add_component(component_name, templates_dir=None):
     """Render the ``component_name`` UI template into ``templates_dir``."""
-    resource = importlib.resources.files(UI_TEMPLATES_PACKAGE).joinpath(f"{component_name}.zip")
+    resource = importlib.resources.files(UI_TEMPLATES_PACKAGE).joinpath(
+        f"{component_name}.zip"
+    )
     if not resource.is_file():
         raise ValueError(
             f"unknown component '{component_name}'. "

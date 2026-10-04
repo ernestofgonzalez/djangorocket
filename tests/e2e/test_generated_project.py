@@ -46,12 +46,18 @@ def test_boots_without_aws_credentials(project_venv):
     # credential sources so the "no credentials" path is exercised on any host
     # (developer machine, CI role, etc.) rather than silently finding real keys.
     aws_keys = {
-        "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_SESSION_TOKEN",
-        "AWS_OPEN_SEARCH_REGION_NAME", "AWS_DEFAULT_REGION", "AWS_REGION",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+        "AWS_SESSION_TOKEN",
+        "AWS_OPEN_SEARCH_REGION_NAME",
+        "AWS_DEFAULT_REGION",
+        "AWS_REGION",
         "AWS_PROFILE",
     }
     env = {k: v for k, v in project_venv.env.items() if k not in aws_keys}
-    env["AWS_SHARED_CREDENTIALS_FILE"] = str(project_venv.project_dir / "no-such-aws-credentials")
+    env["AWS_SHARED_CREDENTIALS_FILE"] = str(
+        project_venv.project_dir / "no-such-aws-credentials"
+    )
     env["AWS_CONFIG_FILE"] = str(project_venv.project_dir / "no-such-aws-config")
     env["AWS_EC2_METADATA_DISABLED"] = "true"
 

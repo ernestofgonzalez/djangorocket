@@ -5,16 +5,16 @@ from pathlib import Path
 
 from djangorocket.django import DjangoSettingsManager
 
-class DjangoSettingsManagerTestCase(unittest.TestCase):
 
+class DjangoSettingsManagerTestCase(unittest.TestCase):
     def setUp(self):
         self.temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".py")
         return super().setUp()
-    
+
     def tearDown(self):
         os.unlink(self.temp_file.name)
         return super().tearDown()
-    
+
     def _init_manager(self, settings_content):
         self.temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".py")
         self.temp_file.write(settings_content.encode("utf-8"))
@@ -42,12 +42,14 @@ INSTALLED_APPS = ['django.contrib.admin', 'django.contrib.auth']
 """
         manager = self._init_manager(settings_content)
 
-        with self.assertLogs(level='INFO') as log:
+        with self.assertLogs(level="INFO") as log:
             manager.add_app("django.contrib.admin")
         with open(self.temp_file.name, "r") as file:
             content = file.read()
         self.assertEqual(content.count("'django.contrib.admin'"), 1)
-        self.assertIn("App 'django.contrib.admin' is already in INSTALLED_APPS.", log.output[0])
+        self.assertIn(
+            "App 'django.contrib.admin' is already in INSTALLED_APPS.", log.output[0]
+        )
 
     def test_get_templates_dirs_with_base_dir(self):
         # Test when BASE_DIR and TEMPLATES["DIRS"] are properly defined
@@ -100,7 +102,9 @@ TEMPLATES = [
 
         with self.assertRaises(ValueError) as context:
             manager.get_templates_dirs()
-        self.assertEqual(str(context.exception), "BASE_DIR is not defined in settings.py")
+        self.assertEqual(
+            str(context.exception), "BASE_DIR is not defined in settings.py"
+        )
 
     def test_get_templates_dirs_without_dirs_key(self):
         # Test when TEMPLATES["DIRS"] is not defined
@@ -118,7 +122,10 @@ TEMPLATES = [
 
         with self.assertRaises(ValueError) as context:
             manager.get_templates_dirs()
-        self.assertEqual(str(context.exception), "DIRS key not found in TEMPLATES setting or is not a list.")
+        self.assertEqual(
+            str(context.exception),
+            "DIRS key not found in TEMPLATES setting or is not a list.",
+        )
 
     def test_get_templates_dirs_with_empty_dirs(self):
         # Test when TEMPLATES["DIRS"] is an empty list

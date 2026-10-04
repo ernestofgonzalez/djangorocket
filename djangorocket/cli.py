@@ -10,11 +10,12 @@ import threading
 import time
 
 import click
-from cookiecutter.main import cookiecutter
 from cookiecutter.exceptions import OutputDirExistsException
+from cookiecutter.main import cookiecutter
 
 from djangorocket.components import add_components
 from djangorocket.django import DjangoSettingsManager
+
 
 @click.group()
 def main():
@@ -155,7 +156,9 @@ def _pick_host_port(preferred, reserved):
 def init():
     """Scaffold a new DjangoRocket project in the current directory."""
     project_name = click.prompt("Project name", default="My Project")
-    base_template = importlib.resources.files("djangorocket.templates.projects").joinpath("base")
+    base_template = importlib.resources.files(
+        "djangorocket.templates.projects"
+    ).joinpath("base")
 
     output_dir = os.getcwd()
 
@@ -199,7 +202,11 @@ def init():
 
 @main.command()
 @click.argument("components", nargs=-1)
-@click.option("--templates-dir", default=None, help="Directory where the new template source file should be added to.")
+@click.option(
+    "--templates-dir",
+    default=None,
+    help="Directory where the new template source file should be added to.",
+)
 def add(components, templates_dir):
     """Add a UI cookiecutter template to an existing DjangoRocket project."""
     try:

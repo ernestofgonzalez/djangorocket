@@ -1,8 +1,9 @@
-from setuptools import setup, find_packages
-from setuptools.command.build_py import build_py
-import subprocess
-import os
 import io
+import os
+import subprocess
+
+from setuptools import find_packages, setup
+from setuptools.command.build_py import build_py
 
 VERSION = "1.0.0a2"
 
@@ -20,14 +21,16 @@ class CustomBuildCommand(build_py):
 
     def run(self):
         # Run the zip_templates.py script
-        script_path = os.path.join(os.path.dirname(__file__), "tools", "zip_templates.py")
+        script_path = os.path.join(
+            os.path.dirname(__file__), "tools", "zip_templates.py"
+        )
         if os.path.exists(script_path):
             print("Running zip_templates.py to zip all templates...")
             subprocess.check_call(["python", script_path])
         else:
             print(f"Error: Script not found at {script_path}")
             raise FileNotFoundError(f"Script not found: {script_path}")
-        
+
         # Continue with the standard build process
         super().run()
 
@@ -50,8 +53,8 @@ setup(
         "cookiecutter",
     ],
     entry_points={
-        'console_scripts': [
-            'djangorocket = djangorocket.cli:main',
+        "console_scripts": [
+            "djangorocket = djangorocket.cli:main",
         ]
     },
     url="https://github.com/ernestofgonzalez/djangorocket",
