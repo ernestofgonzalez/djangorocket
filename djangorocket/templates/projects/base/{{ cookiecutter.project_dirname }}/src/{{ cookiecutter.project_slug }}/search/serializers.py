@@ -1,5 +1,4 @@
 import serpy
-
 from {{cookiecutter.project_slug}}.serializers import Serializer
 
 

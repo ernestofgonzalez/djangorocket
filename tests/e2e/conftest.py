@@ -141,10 +141,19 @@ def project_venv(baked_project, tmp_path_factory):
     bin_dir = venv_dir / ("Scripts" if os.name == "nt" else "bin")
     python = bin_dir / "python"
 
-    run([python, "-m", "pip", "install", "--upgrade", "pip", "wheel"], cwd=baked_project)
+    run(
+        [python, "-m", "pip", "install", "--upgrade", "pip", "wheel"], cwd=baked_project
+    )
     for req in ("requirements.txt", "requirements-testing.txt"):
         run(
-            [python, "-m", "pip", "install", "-r", baked_project / "requirements" / req],
+            [
+                python,
+                "-m",
+                "pip",
+                "install",
+                "-r",
+                baked_project / "requirements" / req,
+            ],
             cwd=baked_project,
         )
 

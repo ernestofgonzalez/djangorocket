@@ -24,7 +24,7 @@ google-auth==2.16.0
 gunicorn==23.0.0
 phonenumbers==8.13.0
 psycopg2==2.9.10
-python-dotenv==0.15.0
+python-dotenv==1.2.4
 sentry-sdk==2.18.0
 serpy==0.3.1
 shortuuid==1.0.11

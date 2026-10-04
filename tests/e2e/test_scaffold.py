@@ -119,7 +119,9 @@ def test_no_unrendered_cookiecutter_tokens(baked_project):
 
 
 def test_settings_reference_rendered_slug(baked_project):
-    settings = (baked_project / "src/my_project/settings.py").read_text(encoding="utf-8")
+    settings = (baked_project / "src/my_project/settings.py").read_text(
+        encoding="utf-8"
+    )
     assert '"my_project.auth"' in settings
     assert '"my_project.billing"' in settings
     assert "{{ cookiecutter" not in settings

@@ -1,6 +1,6 @@
 import ast
-import os
 import logging
+import os
 from pathlib import Path
 
 
@@ -17,9 +17,9 @@ class DjangoManageManager:
             if os.path.isfile(manage_path):
                 self.manage_path = manage_path
                 return
-            
+
             raise FileNotFoundError("manage.py not found in the passed `manage_path`.")
-    
+
         default_manage_module = [
             os.path.join(os.getcwd(), "manage.py"),
             os.path.join(os.getcwd(), "src", "manage.py"),
@@ -30,7 +30,9 @@ class DjangoManageManager:
                 self.manage_path = module
                 return
 
-        raise FileNotFoundError("manage.py not found in the current directory or src subdirectory.")
+        raise FileNotFoundError(
+            "manage.py not found in the current directory or src subdirectory."
+        )
 
     def get_default_settings_module(self):
         """
@@ -58,7 +60,7 @@ class DjangoManageManager:
                         return func.args[1].value
 
         raise ValueError("DJANGO_SETTINGS_MODULE not found in manage.py")
-    
+
     def get_settings_path(self):
         """
         Get the file path of the settings.py file based on the settings module.
@@ -93,10 +95,10 @@ class DjangoSettingsManager:
         if settings_path is not None:
             if not os.path.isfile(settings_path):
                 raise FileNotFoundError(f"Settings file not found: {settings_path}")
-        else:    
+        else:
             manage_module = DjangoManageManager()
             settings_path = manage_module.get_settings_path()
-            
+
         self.settings_path = settings_path
         self.tree = self._load_ast()
         self.logger = logging.getLogger(__name__)
@@ -243,7 +245,10 @@ class DjangoSettingsManager:
             if isinstance(node, ast.Assign):
                 for target in node.targets:
                     if isinstance(target, ast.Name) and target.id == "TEMPLATES":
-                        if isinstance(node.value, ast.List) and len(node.value.elts) > 0:
+                        if (
+                            isinstance(node.value, ast.List)
+                            and len(node.value.elts) > 0
+                        ):
                             first_element = node.value.elts[0]
                             if isinstance(first_element, ast.Dict):
                                 return first_element
@@ -313,13 +318,26 @@ class DjangoSettingsManager:
                 if isinstance(value, ast.List):
                     raw_dirs = []
                     for element in value.elts:
-                        if isinstance(element, ast.Call) and isinstance(element.func, ast.Attribute):
+                        if isinstance(element, ast.Call) and isinstance(
+                            element.func, ast.Attribute
+                        ):
                             # Handle os.path.join(BASE_DIR, ...)
                             if element.func.attr == "join" and len(element.args) > 1:
-                                if isinstance(element.args[0], ast.Name) and element.args[0].id == "BASE_DIR":
+                                if (
+                                    isinstance(element.args[0], ast.Name)
+                                    and element.args[0].id == "BASE_DIR"
+                                ):
                                     if base_dir is None:
-                                        raise ValueError("BASE_DIR is not defined in settings.py")
-                                    joined_path = os.path.join(base_dir, *[ast.literal_eval(arg) for arg in element.args[1:]])
+                                        raise ValueError(
+                                            "BASE_DIR is not defined in settings.py"
+                                        )
+                                    joined_path = os.path.join(
+                                        base_dir,
+                                        *[
+                                            ast.literal_eval(arg)
+                                            for arg in element.args[1:]
+                                        ],
+                                    )
                                     raw_dirs.append(joined_path)
                         elif isinstance(element, ast.Constant):
                             # Handle plain string paths
@@ -340,5 +358,7 @@ class DjangoSettingsManager:
         """
         templates_dirs = self.get_templates_dirs()
         if not templates_dirs:
-            raise ValueError("No template directories are configured in TEMPLATES['DIRS'].")
+            raise ValueError(
+                "No template directories are configured in TEMPLATES['DIRS']."
+            )
         return templates_dirs[0]

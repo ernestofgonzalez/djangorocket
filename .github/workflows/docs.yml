@@ -9,8 +9,13 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          # Pin it. Left unset, this job silently followed the runner's
+          # default Python onto 3.14, where Sphinx 6.1.3 died importing
+          # `imghdr` -- removed from the stdlib in 3.13 by PEP 594.
+          python-version: "3.14"
       - name: Install dependencies
         run: |
           pip install -r requirements/requirements-docs.txt

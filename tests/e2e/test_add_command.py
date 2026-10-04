@@ -96,7 +96,9 @@ def test_add_accordion_writes_rendered_template(tmp_path, accordion_zip):
     assert "{% raw %}" not in text and "{% endraw %}" not in text
 
 
-def test_add_accordion_discovers_templates_dir_from_settings(baked_project, accordion_zip):
+def test_add_accordion_discovers_templates_dir_from_settings(
+    baked_project, accordion_zip
+):
     """Run from inside a baked project so the CLI must read ``TEMPLATES['DIRS']``
     from ``settings.py`` (resolving ``BASE_DIR`` relative to the settings file).
     Generated projects put templates at ``src/templates``."""
@@ -127,7 +129,9 @@ def test_add_renders_each_requested_component(tmp_path, accordion_zip):
     The old loop ignored ``component_name``, so the number of rendered templates
     was driven by the argument *count* rather than the arguments themselves.
     """
-    result = _run_add("accordion", "nope", "--templates-dir", str(tmp_path), cwd=tmp_path)
+    result = _run_add(
+        "accordion", "nope", "--templates-dir", str(tmp_path), cwd=tmp_path
+    )
 
     # The first component rendered before the unknown one aborted the run.
     assert (tmp_path / "accordion" / "accordion.html").is_file(), result.stdout
